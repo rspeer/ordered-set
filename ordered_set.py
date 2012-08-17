@@ -1,5 +1,6 @@
 """
-A MutableSet that remembers its order, so that every entry has an index.
+An OrderedSet is a custom MutableSet that remembers its order, so that every
+entry has an index that can be looked up.
 
 Based on a recipe originally posted to ActiveState Recipes by Raymond Hettiger,
 and released under the MIT license.
@@ -19,7 +20,8 @@ SLICE_ALL = slice(None)
 
 class OrderedSet(collections.MutableSet):
     """
-    A MutableSet that remembers its order, so that every entry has an index.
+    An OrderedSet is a custom MutableSet that remembers its order, so that
+    every entry has an index that can be looked up.
     """
     def __init__(self, iterable=None):
         self.items = []

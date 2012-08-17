@@ -1,0 +1,17 @@
+An OrderedSet is a custom MutableSet that remembers its order, so that every
+entry has an index that can be looked up.
+
+Based on a recipe originally posted to ActiveState Recipes by Raymond Hettiger,
+and released under the MIT license:
+
+    http://code.activestate.com/recipes/576694-orderedset/
+
+Rob Speer's changes are as follows:
+
+    - changed the content from a doubly-linked list to a regular Python list.
+      Seriously, who wants O(1) deletes but O(N) lookups by index?
+    - add() returns the index of the added item
+    - index() just returns the index of an item
+    - added a __getstate__ and __setstate__ so it can be pickled
+    - added __getitem__
+
