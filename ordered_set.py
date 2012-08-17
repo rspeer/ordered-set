@@ -68,6 +68,8 @@ class OrderedSet(collections.MutableSet):
         Get the index of a given key, raising an IndexError if it's not
         present.
         """
+        if hasattr(key, '__iter__'):
+            return [self.index(subkey) for subkey in key]
         return self.map[key]
 
     def discard(self, key):
