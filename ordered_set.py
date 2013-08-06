@@ -64,6 +64,7 @@ class OrderedSet(collections.MutableSet):
             self.map[key] = len(self.items)
             self.items.append(key)
         return self.map[key]
+    append = add
     
     def index(self, key):
         """
