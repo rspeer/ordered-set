@@ -33,6 +33,17 @@ class OrderedSet(collections.MutableSet):
         return len(self.items)
 
     def __getitem__(self, index):
+        """
+        Get the item at a given index.
+
+        If `index` is a slice, you will get back that slice of items. If it's
+        the slice [:], exactly the same object is returned. (If you want an
+        independent copy of an OrderedSet, use `OrderedSet.copy()`.)
+
+        If `index` is an iterable, you'll get the OrderedSet of items
+        corresponding to those indices. This is similar to NumPy's
+        "fancy indexing".
+        """
         if index == SLICE_ALL:
             return self
         elif hasattr(index, '__index__') or isinstance(index, slice):
@@ -60,6 +71,12 @@ class OrderedSet(collections.MutableSet):
         return key in self.map
 
     def add(self, key):
+        """
+        Add `key` as an item to this OrderedSet, then return its index.
+
+        If `key` is already in the OrderedSet, return the index it already
+        had.
+        """
         if key not in self.map:
             self.map[key] = len(self.items)
             self.items.append(key)
@@ -68,30 +85,26 @@ class OrderedSet(collections.MutableSet):
     
     def index(self, key):
         """
-        Get the index of a given key, raising an IndexError if it's not
+        Get the index of a given entry, raising an IndexError if it's not
         present.
+
+        `key` can be an iterable of entries, in which case this returns a list
+        of indices.
         """
         if hasattr(key, '__iter__'):
             return [self.index(subkey) for subkey in key]
         return self.map[key]
 
     def discard(self, key):
-        if key in self.map:        
-            loc = self.map.pop(key)
-            self.items = self.items[:loc] + self.items[loc+1:]
+        raise NotImplementedError(
+            "Cannot remove items from an existing OrderedSet"
+        )
 
     def __iter__(self):
         return iter(self.items)
 
     def __reversed__(self):
         return reversed(self.items)
-
-    def pop(self, last=True):
-        if not self:
-            raise KeyError('set is empty')
-        key = next(reversed(self)) if last else next(iter(self))
-        self.discard(key)
-        return key
 
     def __repr__(self):
         if not self:
@@ -102,17 +115,4 @@ class OrderedSet(collections.MutableSet):
         if isinstance(other, OrderedSet):
             return len(self) == len(other) and self.items == other.items
         return set(self) == set(other)
-            
-if __name__ == '__main__':
-    import pickle
-    print(OrderedSet('abracadaba'))
-    test = OrderedSet('simsalabim')
-    print(test)
-    roundtrip = pickle.loads(pickle.dumps(test))
-    print(roundtrip)
-    assert (roundtrip == test)
-    roundtrip.pop()
-    print(roundtrip)
-    print(roundtrip[[1, 2]])
-    print(roundtrip[:])
 
