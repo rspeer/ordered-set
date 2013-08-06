@@ -1,11 +1,10 @@
 from setuptools import setup
-import sys
 
 setup(
     name="ordered-set",
-    version = '1.0',
-    maintainer='Luminoso, LLC',
-    maintainer_email='dev@lumino.so',
+    version = '1.0.1',
+    maintainer='Luminoso Technologies, Inc.',
+    maintainer_email='rob@luminoso.com',
     license = "MIT-LICENSE",
     url = 'http://github.com/LuminosoInsight/orderedset',
     platforms = ["any"],
