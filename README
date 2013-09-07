@@ -15,3 +15,5 @@ Rob Speer's changes are as follows:
     - added a __getstate__ and __setstate__ so it can be pickled
     - added __getitem__
 
+Evan Callicoat's changes:
+    - implemented discard() so removal of items is possible
