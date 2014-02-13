@@ -91,7 +91,7 @@ class OrderedSet(collections.MutableSet):
         `key` can be an iterable of entries, in which case this returns a list
         of indices.
         """
-        if hasattr(key, '__iter__'):
+        if hasattr(key, '__iter__') and not isinstance(key, str):
             return [self.index(subkey) for subkey in key]
         return self.map[key]
 
