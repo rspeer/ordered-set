@@ -35,4 +35,11 @@ def test_indexing():
 
     eq_(set1[[1, 2]], OrderedSet(['b', 'r']))
     eq_(set1[1:3], OrderedSet(['b', 'r']))
+    eq_(set1.index('b'), 1)
+    eq_(set1.index(('b', 'r')), [1, 2])
+    try:
+        set1.index('br')
+        assert False, "Looking up a nonexistent key should be a KeyError"
+    except KeyError:
+        pass
 
