@@ -1,12 +1,18 @@
 from nose.tools import eq_
 from ordered_set import OrderedSet
+import pickle
 
 
 def test_pickle():
-    import pickle
     set1 = OrderedSet('abracadabra')
     roundtrip = pickle.loads(pickle.dumps(set1))
     assert roundtrip == set1
+
+
+def test_empty_pickle():
+    empty_oset = OrderedSet()
+    empty_roundtrip = pickle.loads(pickle.dumps(empty_oset))
+    assert empty_roundtrip == empty_oset
 
 
 def test_order():

@@ -17,6 +17,7 @@ Rob Speer's changes are as follows:
 import collections
 
 SLICE_ALL = slice(None)
+__version__ = '1.3'
 
 
 def is_iterable(obj):
@@ -78,10 +79,22 @@ class OrderedSet(collections.MutableSet):
         return OrderedSet(self)
 
     def __getstate__(self):
-        return list(self)
+        if len(self) == 0:
+            # The state can't be an empty list.
+            # We need to return a truthy value, or else __setstate__ won't be run.
+            #
+            # This could have been done more gracefully by always putting the state
+            # in a tuple, but this way is backwards- and forwards- compatible with
+            # previous versions of OrderedSet.
+            return (None,)
+        else:
+            return list(self)
     
     def __setstate__(self, state):
-        self.__init__(state)
+        if state == (None,):
+            self.__init__([])
+        else:
+            self.__init__(state)
 
     def __contains__(self, key):
         return key in self.map
