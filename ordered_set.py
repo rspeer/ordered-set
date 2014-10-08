@@ -143,5 +143,11 @@ class OrderedSet(collections.MutableSet):
     def __eq__(self, other):
         if isinstance(other, OrderedSet):
             return len(self) == len(other) and self.items == other.items
-        return set(self) == set(other)
+        try:
+            other_as_set = set(other)
+        except TypeError:
+            # If `other` can't be converted into a set, it's not equal.
+            return False
+        else:
+            return set(self) == other_as_set
 
