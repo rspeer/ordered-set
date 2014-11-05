@@ -4,3 +4,4 @@
 .*.swp
 *.egg-info
 dist/
+.tox/
