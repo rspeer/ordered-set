@@ -10,6 +10,8 @@ setup(
     platforms = ["any"],
     description = "A MutableSet that remembers its order, so that every entry has an index.",
     py_modules=['ordered_set'],
+    package_data={'': ['MIT-LICENSE']},
+    include_package_data=True,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
