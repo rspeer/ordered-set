@@ -49,3 +49,19 @@ def test_indexing():
     except KeyError:
         pass
 
+def test_remove():
+    set1 = OrderedSet('abracadabra')
+
+    set1.remove('a')
+    set1.remove('b')
+
+    assert set1 == OrderedSet('rcdr')
+
+def test_clear():
+    set1 = OrderedSet('abracadabra')
+
+    set1.clear()
+
+    assert len(set1) == 0
+    assert set1 == OrderedSet()
+
