@@ -125,9 +125,16 @@ class OrderedSet(collections.MutableSet):
         return self.map[key]
 
     def discard(self, key):
-        raise NotImplementedError(
-            "Cannot remove items from an existing OrderedSet"
-        )
+        i = self.items.index(key)
+        del self.items[i]
+        del self.map[key]
+        for k, v in self.map.items():
+            if v >= i:
+                self.map[k] = v - 1
+
+    def clear(self):
+        del self.items[:]
+        self.map.clear()
 
     def __iter__(self):
         return iter(self.items)
