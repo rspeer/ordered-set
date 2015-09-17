@@ -12,6 +12,8 @@ setup(
     py_modules=['ordered_set'],
     package_data={'': ['MIT-LICENSE']},
     include_package_data=True,
+    test_suite='nose.collector',
+    tests_require=['nose'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
