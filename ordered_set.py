@@ -89,7 +89,7 @@ class OrderedSet(collections.MutableSet):
             return (None,)
         else:
             return list(self)
-    
+
     def __setstate__(self, state):
         if state == (None,):
             self.__init__([])
@@ -111,7 +111,7 @@ class OrderedSet(collections.MutableSet):
             self.items.append(key)
         return self.map[key]
     append = add
-    
+
     def index(self, key):
         """
         Get the index of a given entry, raising an IndexError if it's not
@@ -125,14 +125,24 @@ class OrderedSet(collections.MutableSet):
         return self.map[key]
 
     def discard(self, key):
-        i = self.items.index(key)
-        del self.items[i]
-        del self.map[key]
-        for k, v in self.map.items():
-            if v >= i:
-                self.map[k] = v - 1
+        """
+        Remove an element.  Do not raise an exception if absent.
+
+        The MutableSet mixin uses this to implement the .remove() method, which
+        *does* raise an error when asked to remove a non-existent item.
+        """
+        if key in self:
+            i = self.items.index(key)
+            del self.items[i]
+            del self.map[key]
+            for k, v in self.map.items():
+                if v >= i:
+                    self.map[k] = v - 1
 
     def clear(self):
+        """
+        Remove all items from this OrderedSet.
+        """
         del self.items[:]
         self.map.clear()
 

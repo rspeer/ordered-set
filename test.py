@@ -1,4 +1,4 @@
-from nose.tools import eq_
+from nose.tools import eq_, raises
 from ordered_set import OrderedSet
 import pickle
 
@@ -68,9 +68,21 @@ def test_remove():
     assert 'b' not in set1
     assert 'r' in set1
 
+    # Make sure we can .discard() something that's already gone, plus
+    # something that was never there
+    set1.discard('a')
+    set1.discard('a')
+
+
+@raises(KeyError)
+def test_remove_error():
+    # If we .remove() an element that's not there, we get a KeyError
+    set1 = OrderedSet('abracadabra')
+    set1.remove('z')
+
+
 def test_clear():
     set1 = OrderedSet('abracadabra')
-
     set1.clear()
 
     assert len(set1) == 0
