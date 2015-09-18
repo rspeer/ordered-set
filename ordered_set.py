@@ -17,7 +17,7 @@ Rob Speer's changes are as follows:
 import collections
 
 SLICE_ALL = slice(None)
-__version__ = '1.3'
+__version__ = '1.4.0'
 
 
 def is_iterable(obj):
