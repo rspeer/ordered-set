@@ -112,6 +112,21 @@ class OrderedSet(collections.MutableSet):
         return self.map[key]
     append = add
 
+    def update(self, sequence):
+        """
+        Update set with given iterable sequence, then return index of last element.
+        If `sequence` is not iterable then just add this element
+        """
+        try:
+            iter(sequence)
+        except TypeError:
+            # If it is not iterable just add it to the set
+            return self.add(sequence)
+        item_index = None
+        for item in sequence:
+            item_index = self.add(item)
+        return item_index
+
     def index(self, key):
         """
         Get the index of a given entry, raising an IndexError if it's not
@@ -123,6 +138,19 @@ class OrderedSet(collections.MutableSet):
         if is_iterable(key):
             return [self.index(subkey) for subkey in key]
         return self.map[key]
+
+    def pop(self):
+        """
+        Remove and return an last element from the set. Raises KeyError if the set is empty.
+        """
+        if not self.items:
+            raise KeyError('Set is empty')
+
+        elem = self.items[-1]
+        del self.items[-1]
+        del self.map[elem]
+        return elem
+
 
     def discard(self, key):
         """
