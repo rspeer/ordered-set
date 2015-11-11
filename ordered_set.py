@@ -120,8 +120,8 @@ class OrderedSet(collections.MutableSet):
         try:
             iter(sequence)
         except TypeError:
-            # If it is not iterable just add it to the set
-            return self.add(sequence)
+            raise ValueError('Argument needs to be an iterable, got %s' % type(sequence))
+
         item_index = None
         for item in sequence:
             item_index = self.add(item)
