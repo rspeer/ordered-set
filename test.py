@@ -91,11 +91,17 @@ def test_clear():
 
 def test_update():
     set1 = OrderedSet('abcd')
-    set1.update('efgh')
+    result = set1.update('efgh')
 
+    assert result == 7
     assert len(set1) == 8
-    assert set1[0] == 'a'
-    assert set1[7] == 'h'
+    assert ''.join(set1) == 'abcdefgh'
+
+    set2 = OrderedSet('abcd')
+    result = set2.update('cdef')
+    assert result == 5
+    assert len(set2) == 6
+    assert ''.join(set2) == 'abcdef'
 
 
 def test_pop():
