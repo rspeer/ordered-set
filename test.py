@@ -1,4 +1,4 @@
-from nose.tools import eq_, raises
+from nose.tools import eq_, raises, assert_raises
 from ordered_set import OrderedSet
 import pickle
 
@@ -87,4 +87,25 @@ def test_clear():
 
     assert len(set1) == 0
     assert set1 == OrderedSet()
+
+
+def test_update():
+    set1 = OrderedSet('abcd')
+    set1.update('efgh')
+
+    assert len(set1) == 8
+    assert set1[0] == 'a'
+    assert set1[7] == 'h'
+
+
+def test_pop():
+    set1 = OrderedSet('ab')
+    elem = set1.pop()
+
+    assert elem == 'b'
+    elem = set1.pop()
+
+    assert elem == 'a'
+
+    assert_raises(KeyError, set1.pop)
 
