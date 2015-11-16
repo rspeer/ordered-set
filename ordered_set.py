@@ -17,7 +17,7 @@ Rob Speer's changes are as follows:
 import collections
 
 SLICE_ALL = slice(None)
-__version__ = '1.4.0'
+__version__ = '1.5.0'
 
 
 def is_iterable(obj):
@@ -114,17 +114,15 @@ class OrderedSet(collections.MutableSet):
 
     def update(self, sequence):
         """
-        Update set with given iterable sequence, then return index of last element.
-        If `sequence` is not iterable then just add this element
+        Update the set with the given iterable sequence, then return the index
+        of the last element inserted.
         """
+        item_index = None
         try:
-            iter(sequence)
+            for item in sequence:
+                item_index = self.add(item)
         except TypeError:
             raise ValueError('Argument needs to be an iterable, got %s' % type(sequence))
-
-        item_index = None
-        for item in sequence:
-            item_index = self.add(item)
         return item_index
 
     def index(self, key):
@@ -141,7 +139,9 @@ class OrderedSet(collections.MutableSet):
 
     def pop(self):
         """
-        Remove and return an last element from the set. Raises KeyError if the set is empty.
+        Remove and return the last element from the set.
+        
+        Raises KeyError if the set is empty.
         """
         if not self.items:
             raise KeyError('Set is empty')
@@ -150,7 +150,6 @@ class OrderedSet(collections.MutableSet):
         del self.items[-1]
         del self.map[elem]
         return elem
-
 
     def discard(self, key):
         """
