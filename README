@@ -15,4 +15,4 @@ Rob Speer's changes are as follows:
     - added a __getstate__ and __setstate__ so it can be pickled
     - added __getitem__
 
-Tested on Python 2.6, 2.7, 3.3, 3.4, PyPy, and PyPy3.
+Tested on Python 2.6, 2.7, 3.3, 3.4, 3.5, PyPy, and PyPy3.
