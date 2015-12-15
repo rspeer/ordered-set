@@ -27,12 +27,13 @@ def is_iterable(obj):
     don't have to be known by this module, such as NumPy arrays.
 
     Strings, however, should be considered as atomic values to look up, not
-    iterables.
+    iterables. The same goes for tuples, since they are immutable and therefore
+    valid entries. 
 
     We don't need to check for the Python 2 `unicode` type, because it doesn't
     have an `__iter__` attribute anyway.
     """
-    return hasattr(obj, '__iter__') and not isinstance(obj, str)
+    return hasattr(obj, '__iter__') and not isinstance(obj, str) and not isinstance(obj, tuple)
 
 
 class OrderedSet(collections.MutableSet):
