@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="ordered-set",
-    version = '1.5.0',
+    version = '2.0.0',
     maintainer='Luminoso Technologies, Inc.',
     maintainer_email='rob@luminoso.com',
     license = "MIT-LICENSE",

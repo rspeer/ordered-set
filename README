@@ -14,5 +14,7 @@ Rob Speer's changes are as follows:
     - index() just returns the index of an item
     - added a __getstate__ and __setstate__ so it can be pickled
     - added __getitem__
+    - __getitem__ and index() can be passed lists or arrays, looking up all
+      the elements in them to perform NumPy-like "fancy indexing"
 
 Tested on Python 2.6, 2.7, 3.3, 3.4, 3.5, PyPy, and PyPy3.
