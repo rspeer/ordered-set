@@ -17,7 +17,7 @@ Rob Speer's changes are as follows:
 import collections
 
 SLICE_ALL = slice(None)
-__version__ = '1.5.0'
+__version__ = '2.0.1'
 
 
 def is_iterable(obj):
@@ -28,7 +28,7 @@ def is_iterable(obj):
 
     Strings, however, should be considered as atomic values to look up, not
     iterables. The same goes for tuples, since they are immutable and therefore
-    valid entries. 
+    valid entries.
 
     We don't need to check for the Python 2 `unicode` type, because it doesn't
     have an `__iter__` attribute anyway.
@@ -141,7 +141,7 @@ class OrderedSet(collections.MutableSet):
     def pop(self):
         """
         Remove and return the last element from the set.
-        
+
         Raises KeyError if the set is empty.
         """
         if not self.items:
