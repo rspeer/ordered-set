@@ -160,7 +160,7 @@ class OrderedSet(collections.MutableSet):
         *does* raise an error when asked to remove a non-existent item.
         """
         if key in self:
-            i = self.items.index(key)
+            i = self.map[key]
             del self.items[i]
             del self.map[key]
             for k, v in self.map.items():
