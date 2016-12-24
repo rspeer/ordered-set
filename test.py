@@ -22,16 +22,6 @@ def test_order():
     eq_(list(reversed(set1)), ['d', 'c', 'r', 'b', 'a'])
 
 
-def test_binary_operations():
-    set1 = OrderedSet('abracadabra')
-    set2 = OrderedSet('simsalabim')
-    assert set1 != set2
-
-    eq_(set1 & set2, OrderedSet(['a', 'b']))
-    eq_(set1 | set2, OrderedSet(['a', 'b', 'r', 'c', 'd', 's', 'i', 'm', 'l']))
-    eq_(set1 - set2, OrderedSet(['r', 'c', 'd']))
-
-
 def test_indexing():
     set1 = OrderedSet('abracadabra')
     eq_(set1[:], set1)
@@ -124,3 +114,48 @@ def test_pop():
 
     assert_raises(KeyError, set1.pop)
 
+def test_le():
+    set1 = OrderedSet([3, 5, 2])
+    set2 = OrderedSet([3, 5, 2, 1])
+    set3 = OrderedSet([3, 2, 5, 1])
+    set4 = OrderedSet([3, 5, 2])
+
+    assert set1 <= set2
+    assert not set1 <= set3
+    assert set1 <= set4
+
+def test_ge():
+    set1 = OrderedSet([3, 5, 2])
+    set2 = OrderedSet([3, 5, 2, 1])
+    set3 = OrderedSet([3, 2, 5, 1])
+    set4 = OrderedSet([3, 5, 2])
+
+    assert set2 >= set1
+    assert not set3 >= set1
+    assert set4 >= set1
+
+def test_lt():
+    set1 = OrderedSet([3, 5, 2])
+    set2 = OrderedSet([3, 5, 2, 1])
+    set3 = OrderedSet([3, 2, 5, 1])
+
+    assert set1 < set2
+    assert not set3 < set2
+
+def test_gt():
+    set1 = OrderedSet([3, 5, 2])
+    set2 = OrderedSet([3, 5, 2, 1])
+    set3 = OrderedSet([3, 2, 5, 1])
+
+    assert set2 > set1
+    assert not set3 > set1
+
+def test_and():
+    set1 = OrderedSet([3, 5, 2])
+    set2 = OrderedSet([3, 5, 2, 1])
+    set3 = OrderedSet([3, 2, 5, 1])
+    set4 = OrderedSet([3, 5, 2])
+
+    assert set2 & set1 == OrderedSet([3, 5, 2])
+    assert set3 & set1 == OrderedSet([3])
+    assert set4 & set1 == OrderedSet([3, 5, 2])

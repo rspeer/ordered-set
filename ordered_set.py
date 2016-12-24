@@ -13,11 +13,19 @@ Rob Speer's changes are as follows:
     - index() just returns the index of an item
     - added a __getstate__ and __setstate__ so it can be pickled
     - added __getitem__
+
+minghu6's changes are as follow:
+
+    - restrict the OrderedSet operation object: only themselves
+      OrderededSet's element consists of its index and value
+      I want to write a new class OrderedSetAdapter
+      to adapt Python set
+      
+    - rewrite some contradictory method from collections.MutableSet
 """
 import collections
 
 SLICE_ALL = slice(None)
-__version__ = '2.0.1'
 
 
 def is_iterable(obj):
@@ -36,6 +44,30 @@ def is_iterable(obj):
     return hasattr(obj, '__iter__') and not isinstance(obj, str) and not isinstance(obj, tuple)
 
 
+def _acquire_ordered_set(f):
+
+    def wrapper(this, other):
+
+        if not isinstance(other, OrderedSet):
+            raise TypeError('the right is not OrderedSet')
+        else:
+            return f(this, other)
+
+    return wrapper
+
+class UnionError(BaseException):
+    def __str__(self):
+        return 'two set can not union'
+
+class DifferenceError(BaseException):
+    def __str__(self):
+        return 'can not compare diffrence of two set'
+
+class SymmetricDifferenceError(BaseException):
+    def __str__(self):
+        return 'can not get symmetric diffrence of two set'
+
+
 class OrderedSet(collections.MutableSet):
     """
     An OrderedSet is a custom MutableSet that remembers its order, so that
@@ -45,7 +77,7 @@ class OrderedSet(collections.MutableSet):
         self._items = []
         self._map = {}
         if iterable is not None:
-            self |= iterable
+            self.update(iterable)
 
     def get_items(self):
         return self._items.copy()
@@ -203,3 +235,117 @@ class OrderedSet(collections.MutableSet):
             return False
 
 
+    @_acquire_ordered_set
+    def __gt__(self, other):
+
+        if len(self._items) <= len(other._items):
+            return False
+        else:
+            for this_item, other_item in zip(self._items, other._items):
+                if this_item != other_item:
+                    return False
+
+            return True
+
+    @_acquire_ordered_set
+    def __lt__(self, other):
+        if len(self._items) >= len(other._items):
+            return False
+        else:
+            for this_item, other_item in zip(self._items, other._items):
+                if this_item != other_item:
+                    return False
+
+            return True
+
+    @_acquire_ordered_set
+    def __ge__(self, other):
+        if self.__eq__(other) or self.__gt__(other):
+            return True
+        else:
+            return False
+
+    @_acquire_ordered_set
+    def __le__(self, other):
+        if self.__eq__(other) or self.__lt__(other):
+            return True
+        else:
+            return False
+
+    def issubset(self, other):
+        return self.__le__(other)
+
+    def issuperset(self, other):
+        return self.__ge__(other)
+
+    @_acquire_ordered_set
+    def __and__(self, other):
+        res = OrderedSet()
+        for this_item, other_item in zip(self._items, other._items):
+            if this_item != other_item:
+                break
+            else:
+                res.add(this_item)
+
+        return res
+
+    def intersection(self, other):
+        return self.__and__(other)
+
+    def intersection_update(self, other):
+        self = self.__and__(other)
+
+    def isdisjoint(self, other):
+        if len(self.intersection(other)) == 0:
+            return True
+        else:
+            return False
+
+
+
+    @_acquire_ordered_set
+    def __or__(self, other):
+        if self.issubset(other):
+            return other.copy()
+        elif self.issuperset(other):
+            return self.copy()
+        else:
+            raise UnionError
+
+    @_acquire_ordered_set
+    def __sub__(self, other):
+        if self.issubset(other):
+            return OrderedSet()
+        else:
+            raise DifferenceError
+
+    def diffrence(self, other):
+        return self.__sub__(other)
+
+    def diffrence_update(self, other):
+        self = self.__sub__(other)
+
+
+    def __iand__(self, other):
+        self = self.__and__(other)
+
+    def __ior__(self, other):
+        self = self.__or__(other)
+
+    def __rand__(self, other):
+        return other.__and__(self)
+
+    def __ror__(self, other):
+        return other.__or__(self)
+
+    def __xor__(self, other):
+        raise SymmetricDifferenceError
+
+    def __ixor__(self, other):
+        raise SymmetricDifferenceError
+
+    def __rxor__(self, other):
+        raise SymmetricDifferenceError
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
