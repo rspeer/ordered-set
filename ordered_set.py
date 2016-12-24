@@ -42,13 +42,23 @@ class OrderedSet(collections.MutableSet):
     every entry has an index that can be looked up.
     """
     def __init__(self, iterable=None):
-        self.items = []
-        self.map = {}
+        self._items = []
+        self._map = {}
         if iterable is not None:
             self |= iterable
 
+    def get_items(self):
+        return self._items.copy()
+
+    items = property(get_items)
+
+    def get_map(self):
+        return self._map.copy()
+
+    map = property(get_map)
+
     def __len__(self):
-        return len(self.items)
+        return len(self._items)
 
     def __getitem__(self, index):
         """
@@ -65,13 +75,13 @@ class OrderedSet(collections.MutableSet):
         if index == SLICE_ALL:
             return self
         elif hasattr(index, '__index__') or isinstance(index, slice):
-            result = self.items[index]
+            result = self._items[index]
             if isinstance(result, list):
                 return OrderedSet(result)
             else:
                 return result
         elif is_iterable(index):
-            return OrderedSet([self.items[i] for i in index])
+            return OrderedSet([self._items[i] for i in index])
         else:
             raise TypeError("Don't know how to index an OrderedSet by %r" %
                     index)
@@ -98,7 +108,7 @@ class OrderedSet(collections.MutableSet):
             self.__init__(state)
 
     def __contains__(self, key):
-        return key in self.map
+        return key in self._map
 
     def add(self, key):
         """
@@ -107,10 +117,10 @@ class OrderedSet(collections.MutableSet):
         If `key` is already in the OrderedSet, return the index it already
         had.
         """
-        if key not in self.map:
-            self.map[key] = len(self.items)
-            self.items.append(key)
-        return self.map[key]
+        if key not in self._map:
+            self._map[key] = len(self._items)
+            self._items.append(key)
+        return self._map[key]
     append = add
 
     def update(self, sequence):
@@ -128,7 +138,7 @@ class OrderedSet(collections.MutableSet):
 
     def index(self, key):
         """
-        Get the index of a given entry, raising an KeyError if it's not
+        Get the index of a given entry, raising an IndexError if it's not
         present.
 
         `key` can be an iterable of entries that is not a string, in which case
@@ -136,7 +146,7 @@ class OrderedSet(collections.MutableSet):
         """
         if is_iterable(key):
             return [self.index(subkey) for subkey in key]
-        return self.map[key]
+        return self._map[key]
 
     def pop(self):
         """
@@ -144,12 +154,12 @@ class OrderedSet(collections.MutableSet):
 
         Raises KeyError if the set is empty.
         """
-        if not self.items:
+        if not self._items:
             raise KeyError('Set is empty')
 
-        elem = self.items[-1]
-        del self.items[-1]
-        del self.map[elem]
+        elem = self._items[-1]
+        del self._items[-1]
+        del self._map[elem]
         return elem
 
     def discard(self, key):
@@ -160,25 +170,25 @@ class OrderedSet(collections.MutableSet):
         *does* raise an error when asked to remove a non-existent item.
         """
         if key in self:
-            i = self.map[key]
-            del self.items[i]
-            del self.map[key]
-            for k, v in self.map.items():
+            i = self._map[key]
+            del self._items[i]
+            del self._map[key]
+            for k, v in self._map.items():
                 if v >= i:
-                    self.map[k] = v - 1
+                    self._map[k] = v - 1
 
     def clear(self):
         """
         Remove all items from this OrderedSet.
         """
-        del self.items[:]
-        self.map.clear()
+        del self._items[:]
+        self._map.clear()
 
     def __iter__(self):
-        return iter(self.items)
+        return iter(self._items)
 
     def __reversed__(self):
-        return reversed(self.items)
+        return reversed(self._items)
 
     def __repr__(self):
         if not self:
@@ -187,12 +197,9 @@ class OrderedSet(collections.MutableSet):
 
     def __eq__(self, other):
         if isinstance(other, OrderedSet):
-            return len(self) == len(other) and self.items == other.items
-        try:
-            other_as_set = set(other)
-        except TypeError:
-            # If `other` can't be converted into a set, it's not equal.
-            return False
+            return len(self) == len(other) and self._items == other._items
         else:
-            return set(self) == other_as_set
+            # OrderedSet cann't compared with set
+            return False
+
 
