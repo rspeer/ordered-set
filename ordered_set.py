@@ -20,7 +20,7 @@ minghu6's changes are as follow:
       OrderededSet's element consists of its index and value
       I want to write a new class OrderedSetAdapter
       to adapt Python set
-      
+
     - rewrite some contradictory method from collections.MutableSet
 """
 import collections
@@ -49,7 +49,7 @@ def _acquire_ordered_set(f):
     def wrapper(this, other):
 
         if not isinstance(other, OrderedSet):
-            raise TypeError('the right is not OrderedSet')
+            raise TypeError('both of operation object are expected OrderedSet')
         else:
             return f(this, other)
 
@@ -319,10 +319,10 @@ class OrderedSet(collections.MutableSet):
         else:
             raise DifferenceError
 
-    def diffrence(self, other):
+    def difference(self, other):
         return self.__sub__(other)
 
-    def diffrence_update(self, other):
+    def difference_update(self, other):
         self = self.__sub__(other)
 
 
