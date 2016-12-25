@@ -61,12 +61,17 @@ class OrderedSetAdapter(OrderedSet):
         self = OrderedSetAdapter(self.__and__(other))
         return self
 
-    def intersection(self, other):
-        return self.__and__(other)
+    def intersection(self, *others):
+        res = self.__and__(others[0])
+        for other in others[1:]:
+            res = res.intersection(other)
 
-    def intersection_update(self, other):
-        self = OrderedSetAdapter(self.__and__(other))
-        return self
+        return res
+
+    def intersection_update(self, *others):
+        res = self.intersection(*others)
+        self.clear()
+        self.update(res)
 
     def isdisjoint(self, other):
         if len(self.intersection(other)) == 0:
@@ -100,9 +105,10 @@ class OrderedSetAdapter(OrderedSet):
 
         return res
 
-    def difference_update(self, other):
-        self = OrderedSetAdapter(self.__sub__(other))
-        return self
+    def difference_update(self, *others):
+        res = self.difference(*others)
+        self.clear()
+        self.update(res)
 
     def __ior__(self, other):
         self = OrderedSetAdapter(self.__or__(other))
@@ -133,5 +139,6 @@ class OrderedSetAdapter(OrderedSet):
         return self ^ other
 
     def symmetric_difference_update(self, other):
-        self = OrderedSetAdapter(self.__xor__(other))
-        return self
+        res = self.__xor__(other)
+        self.clear()
+        self.update(res)

@@ -59,7 +59,8 @@ def symmetric_difference_update_test():
     set3 = set([3, 2, 5, 1])
     set4 = set([3, 5, 2])
 
-    assert set1.symmetric_difference_update(set2) == OrderedSetAdapter([1])
+    set1.symmetric_difference_update(set2)
+    assert set1 == OrderedSetAdapter([1])
 
 def all_i_test():
     set1 = OrderedSetAdapter([3, 5, 2])
@@ -79,9 +80,25 @@ def difference_test():
 
     assert set1.difference(set2, set3) == OrderedSetAdapter([3])
 
+    set1.difference_update(set2, set3)
+    assert set1 == OrderedSetAdapter([3])
+
 def union_test():
     set1 = OrderedSetAdapter([3,])
     set2 = OrderedSetAdapter([5, 1,])
     set3 = OrderedSetAdapter([2])
 
     assert set1.union(set2, set3) == OrderedSetAdapter([3, 5, 1, 2])
+
+def intersection_test():
+    set1 = OrderedSetAdapter([3, 5, 2])
+    set2 = OrderedSetAdapter([5, 2, 0])
+    set3 = OrderedSetAdapter([2])
+
+    assert set1.intersection(set2, set3) == set([2])
+
+    set1.intersection_update(set2, set3)
+    assert set1 == set([2])
+
+
+

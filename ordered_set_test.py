@@ -168,10 +168,12 @@ def test_sub():
     assert set1 - set2 == OrderedSet()
     assert set3 - set1 == OrderedSet()
 
-def test_difference():
+def test_intersection():
     set1 = OrderedSet([3, 5,])
     set2 = OrderedSet([3, 5, 2, 1])
     set3 = OrderedSet([3, 5, 2])
 
-    assert set1.difference(set2, set3) == OrderedSet()
+    assert set3.intersection(set2, set1) == OrderedSet([3, 5])
 
+    set3.intersection_update(set2, set1)
+    assert set3 == OrderedSet([3, 5])

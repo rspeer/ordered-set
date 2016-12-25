@@ -6,3 +6,4 @@
 dist/
 .tox/
 .idea
+__pycache__/

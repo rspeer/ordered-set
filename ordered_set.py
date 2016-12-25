@@ -289,20 +289,24 @@ class OrderedSet(collections.MutableSet):
 
         return res
 
-    def intersection(self, other):
-        return self.__and__(other)
+    def intersection(self, *others):
+        res = self.__and__(others[0])
+        for other in others[1:]:
+            res = res.__and__(other)
 
-    def intersection_update(self, other):
-        self = self.__and__(other)
-        return self
+        return res
+
+    def intersection_update(self, *others):
+        res = self.intersection(*others)
+        self.clear()
+        self.update(res)
+
 
     def isdisjoint(self, other):
         if len(self.intersection(other)) == 0:
             return True
         else:
             return False
-
-
 
     @_acquire_ordered_set
     def __or__(self, other):
@@ -319,18 +323,6 @@ class OrderedSet(collections.MutableSet):
             return OrderedSet()
         else:
             raise DifferenceError
-
-    def difference(self, *others):
-        res = self.__sub__(others[0])
-        for other in others[1:]:
-            res = res.__sub__(other)
-
-        return res
-
-    def difference_update(self, other):
-        self = self.__sub__(other)
-        return self
-
 
     def __iand__(self, other):
         self = self.__and__(other)
