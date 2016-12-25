@@ -71,3 +71,17 @@ def all_i_test():
     set1 &= set2
     set1 ^= set2
 
+
+def difference_test():
+    set1 = OrderedSetAdapter([3, 5, 2])
+    set2 = OrderedSetAdapter([5, 1, 0])
+    set3 = OrderedSetAdapter([2])
+
+    assert set1.difference(set2, set3) == OrderedSetAdapter([3])
+
+def union_test():
+    set1 = OrderedSetAdapter([3,])
+    set2 = OrderedSetAdapter([5, 1,])
+    set3 = OrderedSetAdapter([2])
+
+    assert set1.union(set2, set3) == OrderedSetAdapter([3, 5, 1, 2])

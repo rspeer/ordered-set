@@ -7,7 +7,7 @@ minghu6:
 
     Class OrderedSetAdapter can operate with Python set and return Python set.
     This class operates as supplements to the OrderedSet (modified by mine)
-    
+
 """
 from ordered_set import OrderedSet
 
@@ -78,6 +78,13 @@ class OrderedSetAdapter(OrderedSet):
     def __or__(self, other):
         return set(self).union(set(other))
 
+    def union(self, *others):
+        res = self.__or__(others[0])
+        for other in others[1:]:
+            res = res.union(other)
+
+        return res
+
     @_acquire_set
     def __sub__(self, other):
         return set(self) - set(other)
@@ -86,10 +93,14 @@ class OrderedSetAdapter(OrderedSet):
         self = OrderedSetAdapter(self.__sub__(other))
         return self
 
-    def diffrence(self, other):
-        return self.__sub__(other)
+    def difference(self, *others):
+        res = self.__sub__(others[0])
+        for other in others[1:]:
+            res = res.difference(other)
 
-    def diffrence_update(self, other):
+        return res
+
+    def difference_update(self, other):
         self = OrderedSetAdapter(self.__sub__(other))
         return self
 

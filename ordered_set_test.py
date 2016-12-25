@@ -159,3 +159,19 @@ def test_and():
     assert set2 & set1 == OrderedSet([3, 5, 2])
     assert set3 & set1 == OrderedSet([3])
     assert set4 & set1 == OrderedSet([3, 5, 2])
+
+def test_sub():
+    set1 = OrderedSet([3, 5, 2])
+    set2 = OrderedSet([3, 5, 2, 1])
+    set3 = OrderedSet([3, 5, 2])
+
+    assert set1 - set2 == OrderedSet()
+    assert set3 - set1 == OrderedSet()
+
+def test_difference():
+    set1 = OrderedSet([3, 5,])
+    set2 = OrderedSet([3, 5, 2, 1])
+    set3 = OrderedSet([3, 5, 2])
+
+    assert set1.difference(set2, set3) == OrderedSet()
+
