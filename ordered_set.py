@@ -36,107 +36,60 @@ def is_iterable(obj):
     return hasattr(obj, '__iter__') and not isinstance(obj, str) and not isinstance(obj, tuple)
 
 
-class OrderedSet(collections.MutableSet):
+class OrderedSet(collections.MutableSet, collections.Sequence):
     """
     An OrderedSet is a custom MutableSet that remembers its order, so that
     every entry has an index that can be looked up.
     """
     def __init__(self, iterable=None):
-        self.items = []
-        self.map = {}
+        self.data = collections.OrderedDict()
         if iterable is not None:
             self |= iterable
 
-    def __len__(self):
-        return len(self.items)
-
-    def __getitem__(self, index):
-        """
-        Get the item at a given index.
-
-        If `index` is a slice, you will get back that slice of items. If it's
-        the slice [:], exactly the same object is returned. (If you want an
-        independent copy of an OrderedSet, use `OrderedSet.copy()`.)
-
-        If `index` is an iterable, you'll get the OrderedSet of items
-        corresponding to those indices. This is similar to NumPy's
-        "fancy indexing".
-        """
-        if index == SLICE_ALL:
-            return self
-        elif hasattr(index, '__index__') or isinstance(index, slice):
-            result = self.items[index]
-            if isinstance(result, list):
-                return OrderedSet(result)
-            else:
-                return result
-        elif is_iterable(index):
-            return OrderedSet([self.items[i] for i in index])
-        else:
-            raise TypeError("Don't know how to index an OrderedSet by %r" %
-                    index)
-
-    def copy(self):
-        return OrderedSet(self)
-
-    def __getstate__(self):
-        if len(self) == 0:
-            # The state can't be an empty list.
-            # We need to return a truthy value, or else __setstate__ won't be run.
-            #
-            # This could have been done more gracefully by always putting the state
-            # in a tuple, but this way is backwards- and forwards- compatible with
-            # previous versions of OrderedSet.
-            return (None,)
-        else:
-            return list(self)
-
-    def __setstate__(self, state):
-        if state == (None,):
-            self.__init__([])
-        else:
-            self.__init__(state)
-
+    #
+    # Abstract methods of MutableSet and Sequence
+    #
     def __contains__(self, key):
-        return key in self.map
+        return key in self.data
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def __len__(self):
+        return len(self.data)
 
     def add(self, key):
-        """
-        Add `key` as an item to this OrderedSet, then return its index.
+        self.data[key] = None
+        # OrderedSet specific
+        # TODO: Don't know if this was a side effect of the old update implemenation which utilized it
+        #       or if it was meant to be a feature used externally.  If the latter, it should have a test added for it
+        return self.index(key)
 
-        If `key` is already in the OrderedSet, return the index it already
-        had.
-        """
-        if key not in self.map:
-            self.map[key] = len(self.items)
-            self.items.append(key)
-        return self.map[key]
-    append = add
+    def discard(self, key):
+        if key in self.data:
+            del self.data[key]
 
+    def __getitem__(self, index):
+        if index == SLICE_ALL:
+            return self
+        if is_iterable(index):
+            return [self[i] for i in index]
+        return list(self.data)[index]
+
+    #
+    # Other OrderedSet methods
+    #
     def update(self, sequence):
         """
         Update the set with the given iterable sequence, then return the index
         of the last element inserted.
         """
-        item_index = None
         try:
             for item in sequence:
-                item_index = self.add(item)
+                self.add(item)
         except TypeError:
             raise ValueError('Argument needs to be an iterable, got %s' % type(sequence))
-        return item_index
-
-    def index(self, key):
-        """
-        Get the index of a given entry, raising an IndexError if it's not
-        present.
-
-        `key` can be an iterable of entries that is not a string, in which case
-        this returns a list of indices.
-        """
-        if is_iterable(key):
-            return [self.index(subkey) for subkey in key]
-        return self.map[key]
+        return self.index(item)
 
     def pop(self):
         """
@@ -144,50 +97,15 @@ class OrderedSet(collections.MutableSet):
 
         Raises KeyError if the set is empty.
         """
-        if not self.items:
+        if not self.data:
             raise KeyError('Set is empty')
-
-        elem = self.items[-1]
-        del self.items[-1]
-        del self.map[elem]
+        elem = next(reversed(self.data))
+        del self.data[elem]
         return elem
-
-    def discard(self, key):
-        """
-        Remove an element.  Do not raise an exception if absent.
-
-        The MutableSet mixin uses this to implement the .remove() method, which
-        *does* raise an error when asked to remove a non-existent item.
-        """
-        if key in self:
-            i = self.map[key]
-            del self.items[i]
-            del self.map[key]
-            for k, v in self.map.items():
-                if v >= i:
-                    self.map[k] = v - 1
-
-    def clear(self):
-        """
-        Remove all items from this OrderedSet.
-        """
-        del self.items[:]
-        self.map.clear()
-
-    def __iter__(self):
-        return iter(self.items)
-
-    def __reversed__(self):
-        return reversed(self.items)
-
-    def __repr__(self):
-        if not self:
-            return '%s()' % (self.__class__.__name__,)
-        return '%s(%r)' % (self.__class__.__name__, list(self))
 
     def __eq__(self, other):
         if isinstance(other, OrderedSet):
-            return len(self) == len(other) and self.items == other.items
+            return len(self) == len(other) and self.data == other.data
         try:
             other_as_set = set(other)
         except TypeError:
@@ -196,3 +114,13 @@ class OrderedSet(collections.MutableSet):
         else:
             return set(self) == other_as_set
 
+    def copy(self):
+        return OrderedSet(self)
+
+    def index(self, key):
+        if is_iterable(key):
+            return [self.index(k) for k in key]
+        try:
+            return super(OrderedSet, self).index(key)
+        except ValueError:
+            raise KeyError
