@@ -5,3 +5,5 @@
 *.egg-info
 dist/
 .tox/
+.idea
+__pycache__/
