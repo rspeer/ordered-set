@@ -5,3 +5,6 @@
 *.egg-info
 dist/
 .tox/
+.coverage
+.pytest_cache
+htmlcov

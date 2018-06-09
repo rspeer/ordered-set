@@ -13,7 +13,7 @@ setup(
     package_data={'': ['MIT-LICENSE']},
     include_package_data=True,
     test_suite='nose.collector',
-    tests_require=['nose'],
+    tests_require=['pytest'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
