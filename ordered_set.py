@@ -18,7 +18,7 @@ import collections
 import itertools as it
 
 SLICE_ALL = slice(None)
-__version__ = '2.0.1'
+__version__ = '3.0.0'
 
 
 def is_iterable(obj):
