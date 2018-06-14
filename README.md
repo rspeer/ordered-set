@@ -22,9 +22,9 @@ This module's changes are as follows:
 
 - `index()` just returns the index of an item
 
-- Added a __getstate__ and __setstate__ so it can be pickled
+- Added a `__getstate__` and `__setstate__` so it can be pickled
 
-- Added __getitem__
+- Added `__getitem__`
 
 - `__getitem__` and `index()` can be passed lists or arrays, looking up
   all the elements in them to perform NumPy-like "fancy indexing"
