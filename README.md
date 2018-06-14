@@ -1,4 +1,5 @@
 [![Travis](https://img.shields.io/travis/LuminosoInsight/ordered-set/master.svg?label=Travis%20CI)](https://travis-ci.org/LuminosoInsight/ordered-set)
+[![Codecov](https://codecov.io/github/LuminosoInsight/ordered-set/badge.svg?branch=master&service=github)](https://codecov.io/github/LuminosoInsight/ordered-set?branch=master)
 [![Pypi](https://img.shields.io/pypi/v/ordered-set.svg)](https://pypi.python.org/pypi/ordered-set)
 
 
