@@ -178,6 +178,12 @@ def test_ordered_inequality():
     assert OrderedSet([1, 2]) != collections.deque([2, 2, 1])
 
 
+def test_comparisons():
+    # Comparison operators on sets actually test for subset and superset.
+    assert OrderedSet([1, 2]) < OrderedSet([1, 2, 3])
+    assert OrderedSet([1, 2]) > {1}
+
+
 def test_unordered_equality():
     # Unordered set checks order against non-sequences.
     assert OrderedSet([1, 2]) == set([1, 2])
