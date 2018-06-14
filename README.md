@@ -11,15 +11,25 @@ and released under the MIT license:
 
     http://code.activestate.com/recipes/576694-orderedset/
 
-Rob Speer's changes are as follows:
+This module's changes are as follows:
 
-    - changed the content from a doubly-linked list to a regular Python list.
-      Seriously, who wants O(1) deletes but O(N) lookups by index?
-    - add() returns the index of the added item
-    - index() just returns the index of an item
-    - added a __getstate__ and __setstate__ so it can be pickled
-    - added __getitem__
-    - __getitem__ and index() can be passed lists or arrays, looking up all
-      the elements in them to perform NumPy-like "fancy indexing"
+- Changed the content from a doubly-linked list to a regular Python list.
+  The ActiveState version has O(N) lookups by index and O(1) deletion;
+  this version has O(1) lookups by index and O(N) deletion, which seems
+  more useful in most cases.
 
-Tested on Python 2.6, 2.7, 3.3, 3.4, 3.5, PyPy, and PyPy3.
+- `add()` returns the index of the added item
+
+- `index()` just returns the index of an item
+
+- Added a __getstate__ and __setstate__ so it can be pickled
+
+- Added __getitem__
+
+- `__getitem__` and `index()` can be passed lists or arrays, looking up
+  all the elements in them to perform NumPy-like "fancy indexing"
+
+- The class implements the abstract base classes `collections.MutableSet`
+  and `collections.Sequence`
+
+Tested on Python 2.7, 3.3, 3.4, 3.5, PyPy, and PyPy3.
