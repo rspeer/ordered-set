@@ -4,15 +4,6 @@ entry has an index that can be looked up.
 
 Based on a recipe originally posted to ActiveState Recipes by Raymond Hettiger,
 and released under the MIT license.
-
-Rob Speer's changes are as follows:
-
-    - changed the content from a doubly-linked list to a regular Python list.
-      Seriously, who wants O(1) deletes but O(N) lookups by index?
-    - add() returns the index of the added item
-    - index() just returns the index of an item
-    - added a __getstate__ and __setstate__ so it can be pickled
-    - added __getitem__
 """
 import collections
 import itertools as it
@@ -71,8 +62,8 @@ class OrderedSet(collections.MutableSet, collections.Sequence):
         If `index` is a slice, you will get back that slice of items. If it's
         the slice [:], a copy of this object is returned.
 
-        If `index` is an iterable, you'll get the OrderedSet of items
-        corresponding to those indices. This is similar to NumPy's
+        If `index` is a list or a similar iterable, you'll get the OrderedSet
+        of items corresponding to those indices. This is similar to NumPy's
         "fancy indexing".
 
         Example:
@@ -282,11 +273,12 @@ class OrderedSet(collections.MutableSet, collections.Sequence):
             >>> self == OrderedSet([3, 2, 1])
             False
         """
-        # In python 2 deque is not a Sequence,
-        # always treat deque it as one for compatibility
+        # In Python 2 deque is not a Sequence, so treat it as one for
+        # consistent behavior with Python 3.
         if isinstance(other, (collections.Sequence, collections.deque)):
-            # Ordered Check
-            return len(self) == len(other) and self.items == list(other)
+            # Check that this OrderedSet contains the same elements, in the
+            # same order, as the other object.
+            return list(self) == list(other)
         try:
             other_as_set = set(other)
         except TypeError:
