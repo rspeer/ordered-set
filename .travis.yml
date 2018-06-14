@@ -19,7 +19,7 @@ before_install:
 install:
   - travis_retry pip install -e .
 script: 
-  - travis_wait pytest --doctest-modules --cov-config .coveragerc --cov-report html --cov=ordered_set test.py
+  - travis_wait pytest test.py
     
 after_success: 
   - codecov 
