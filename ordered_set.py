@@ -57,8 +57,10 @@ class OrderedSet(collections.MutableSet):
         Returns the number of unique elements in the ordered set
 
         Example:
-            >>> assert len(OrderedSet([])) == 0
-            >>> assert len(OrderedSet([1, 2])) == 2
+            >>> len(OrderedSet([]))
+            0
+            >>> len(OrderedSet([1, 2]))
+            2
         """
         return len(self.items)
 
@@ -74,32 +76,20 @@ class OrderedSet(collections.MutableSet):
         "fancy indexing".
 
         Example:
-            >>> import pytest
             >>> self = OrderedSet([1, 2, 3])
-            >>> assert self[0] == 1
-            >>> assert self[1] == 2
-            >>> with pytest.raises(IndexError):
-            ...     self[3]
-            >>> assert self[-2] == 2
-            >>> assert self[-3] == 1
-            >>> with pytest.raises(IndexError):
-            ...     self[-4]
-            >>> assert self[::2] == [1, 3]
-            >>> assert self[0:2] == [1, 2]
-            >>> assert self[-1:] == [3]
-            >>> assert self[:] == self
-            >>> assert self[:] is not self
+            >>> self[1]
+            2
         """
         if index == SLICE_ALL:
             return self.copy()
         elif hasattr(index, '__index__') or isinstance(index, slice):
             result = self.items[index]
             if isinstance(result, list):
-                return OrderedSet(result)
+                return self.__class__(result)
             else:
                 return result
         elif is_iterable(index):
-            return OrderedSet([self.items[i] for i in index])
+            return self.__class__([self.items[i] for i in index])
         else:
             raise TypeError(
                 "Don't know how to index an OrderedSet by %r" % index)
@@ -111,9 +101,12 @@ class OrderedSet(collections.MutableSet):
         Example:
             >>> self = OrderedSet([1, 2, 3])
             >>> other = self.copy()
-            >>> assert self == other and self is not other
+            >>> self == other
+            True
+            >>> self is other
+            False
         """
-        return OrderedSet(self)
+        return self.__class__(self)
 
     def __getstate__(self):
         if len(self) == 0:
@@ -138,8 +131,10 @@ class OrderedSet(collections.MutableSet):
         Test if the item is in this ordered set
 
         Example:
-            >>> assert 1 in OrderedSet([1, 3, 2])
-            >>> assert 5 not in OrderedSet([1, 3, 2])
+            >>> 1 in OrderedSet([1, 3, 2])
+            True
+            >>> 5 in OrderedSet([1, 3, 2])
+            False
         """
         return key in self.map
 
@@ -192,13 +187,9 @@ class OrderedSet(collections.MutableSet):
         this returns a list of indices.
 
         Example:
-            >>> import pytest
             >>> self = OrderedSet([1, 2, 3])
-            >>> assert self.index(1) == 0
-            >>> assert self.index(2) == 1
-            >>> assert self.index(3) == 2
-            >>> with pytest.raises(IndexError):
-            ...     self[4]
+            >>> self.index(2)
+            1
         """
         if is_iterable(key):
             return [self.index(subkey) for subkey in key]
@@ -211,13 +202,9 @@ class OrderedSet(collections.MutableSet):
         Raises KeyError if the set is empty.
 
         Example:
-            >>> import pytest
             >>> self = OrderedSet([1, 2, 3])
-            >>> assert self.pop() == 3
-            >>> assert self.pop() == 2
-            >>> assert self.pop() == 1
-            >>> with pytest.raises(KeyError):
-            ...     self.pop()
+            >>> self.pop()
+            3
         """
         if not self.items:
             raise KeyError('Set is empty')
@@ -286,11 +273,14 @@ class OrderedSet(collections.MutableSet):
 
         Example:
             >>> self = OrderedSet([1, 3, 2])
-            >>> assert self == [1, 3, 2]
-            >>> assert self == [1, 2, 3]
-            >>> assert self != [2, 3]
-            >>> # assert self == OrderedSet([3, 2, 1])
-            >>> assert self != OrderedSet([3, 2, 1])
+            >>> self == [1, 3, 2]
+            True
+            >>> self == [1, 2, 3]
+            True
+            >>> self == [2, 3]
+            False
+            >>> self == OrderedSet([3, 2, 1])
+            False
         """
         if isinstance(other, OrderedSet):
             return len(self) == len(other) and self.items == other.items
