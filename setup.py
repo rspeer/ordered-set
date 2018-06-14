@@ -1,6 +1,6 @@
 from setuptools import setup
 
-DESCRIPTION = open('README.md', encoding='utf-8').read()
+DESCRIPTION = open('README.md').read()
 
 
 setup(
