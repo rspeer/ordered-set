@@ -18,7 +18,7 @@ setup(
     package_data={'': ['MIT-LICENSE']},
     include_package_data=True,
     setup_requires=['pytest-runner'],
-    tests_require=['pytest', 'pytest-cov'],
+    tests_require=['pytest'],
     python_requires='>=2.7',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
