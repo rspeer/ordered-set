@@ -1,5 +1,6 @@
 import pickle
 import pytest
+import collections
 from ordered_set import OrderedSet
 
 
@@ -151,3 +152,60 @@ def test_empty_repr():
 def test_eq_wrong_type():
     set1 = OrderedSet()
     assert set1 != 2
+
+
+def test_ordered_equality():
+    # Ordered set checks order against sequences.
+    assert OrderedSet([1, 2]) == OrderedSet([1, 2])
+    assert OrderedSet([1, 2]) == [1, 2]
+    assert OrderedSet([1, 2]) == (1, 2)
+    assert OrderedSet([1, 2]) == collections.deque([1, 2])
+
+
+def test_ordered_inequality():
+    # Ordered set checks order against sequences.
+    assert OrderedSet([1, 2]) != OrderedSet([2, 1])
+
+    assert OrderedSet([1, 2]) != [2, 1]
+    assert OrderedSet([1, 2]) != [2, 1, 1]
+
+    assert OrderedSet([1, 2]) != (2, 1)
+    assert OrderedSet([1, 2]) != (2, 1, 1)
+
+    # Note: in Python 2.7 deque does not inherit from Sequence, but __eq__
+    # contains an explicit check for this case for python 2/3 compatibility.
+    assert OrderedSet([1, 2]) != collections.deque([2, 1])
+    assert OrderedSet([1, 2]) != collections.deque([2, 2, 1])
+
+
+def test_unordered_equality():
+    # Unordered set checks order against non-sequences.
+    assert OrderedSet([1, 2]) == set([1, 2])
+    assert OrderedSet([1, 2]) == frozenset([2, 1])
+
+    assert OrderedSet([1, 2]) == {1: 'a', 2: 'b'}
+    assert OrderedSet([1, 2]) == {1: 1, 2: 2}.keys()
+    assert OrderedSet([1, 2]) == {1: 1, 2: 2}.values()
+
+    # Corner case: OrderedDict is not a Sequence, so we don't check for order,
+    # even though it does have the concept of order.
+    assert OrderedSet([1, 2]) == collections.OrderedDict([(2, 2), (1, 1)])
+
+    # Corner case: We have to treat iterators as unordered because there
+    # is nothing to distinguish an ordered and unordered iterator
+    assert OrderedSet([1, 2]) == iter([1, 2])
+    assert OrderedSet([1, 2]) == iter([2, 1])
+    assert OrderedSet([1, 2]) == iter([2, 1, 1])
+
+
+def test_unordered_inequality():
+    assert OrderedSet([1, 2]) != set([])
+    assert OrderedSet([1, 2]) != frozenset([2, 1, 3])
+
+    assert OrderedSet([1, 2]) != {2: 'b'}
+    assert OrderedSet([1, 2]) != {1: 1, 4: 2}.keys()
+    assert OrderedSet([1, 2]) != {1: 1, 2: 3}.values()
+
+    # Corner case: OrderedDict is not a Sequence, so we don't check for order,
+    # even though it does have the concept of order.
+    assert OrderedSet([1, 2]) != collections.OrderedDict([(2, 2), (3, 1)])

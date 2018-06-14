@@ -37,7 +37,7 @@ def is_iterable(obj):
     return hasattr(obj, '__iter__') and not isinstance(obj, str) and not isinstance(obj, tuple)
 
 
-class OrderedSet(collections.MutableSet):
+class OrderedSet(collections.MutableSet, collections.Sequence):
     """
     An OrderedSet is a custom MutableSet that remembers its order, so that
     every entry has an index that can be looked up.
@@ -268,22 +268,25 @@ class OrderedSet(collections.MutableSet):
 
     def __eq__(self, other):
         """
-        Returns true if the containers have the same items. If `other` is an
-        OrderedSet, then order is checked, otherwise it is ignored.
+        Returns true if the containers have the same items. If `other` is a
+        Sequence, then order is checked, otherwise it is ignored.
 
         Example:
             >>> self = OrderedSet([1, 3, 2])
             >>> self == [1, 3, 2]
             True
             >>> self == [1, 2, 3]
-            True
+            False
             >>> self == [2, 3]
             False
             >>> self == OrderedSet([3, 2, 1])
             False
         """
-        if isinstance(other, OrderedSet):
-            return len(self) == len(other) and self.items == other.items
+        # In python 2 deque is not a Sequence,
+        # always treat deque it as one for compatibility
+        if isinstance(other, (collections.Sequence, collections.deque)):
+            # Ordered Check
+            return len(self) == len(other) and self.items == list(other)
         try:
             other_as_set = set(other)
         except TypeError:
