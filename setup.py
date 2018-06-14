@@ -1,19 +1,25 @@
 from setuptools import setup
 
+DESCRIPTION = open('README.md', encoding='utf-8').read()
+
+
 setup(
     name="ordered-set",
-    version = '2.0.2',
+    version = '3.0.0',
     maintainer='Luminoso Technologies, Inc.',
-    maintainer_email='rob@luminoso.com',
+    maintainer_email='rspeer@luminoso.com',
     license = "MIT-LICENSE",
     url = 'http://github.com/LuminosoInsight/ordered-set',
     platforms = ["any"],
     description = "A MutableSet that remembers its order, so that every entry has an index.",
+    long_description=DESCRIPTION,
+    long_description_content_type='text/markdown',
     py_modules=['ordered_set'],
     package_data={'': ['MIT-LICENSE']},
     include_package_data=True,
-    test_suite='nose.collector',
+    setup_requires=['pytest-runner'],
     tests_require=['pytest'],
+    python_requires='>=2.7',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
