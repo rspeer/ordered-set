@@ -1,6 +1,7 @@
 import pickle
 import pytest
 import collections
+import sys
 from ordered_set import OrderedSet
 
 
@@ -176,6 +177,16 @@ def test_ordered_inequality():
     # contains an explicit check for this case for python 2/3 compatibility.
     assert OrderedSet([1, 2]) != collections.deque([2, 1])
     assert OrderedSet([1, 2]) != collections.deque([2, 2, 1])
+
+
+def test_comparisons():
+    # Comparison operators on sets actually test for subset and superset.
+    assert OrderedSet([1, 2]) < OrderedSet([1, 2, 3])
+    assert OrderedSet([1, 2]) > OrderedSet([1])
+    
+    # MutableSet subclasses aren't comparable to set on 3.3.
+    if tuple(sys.version_info) >= (3, 4):
+        assert OrderedSet([1, 2]) > {1}
 
 
 def test_unordered_equality():

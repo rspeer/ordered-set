@@ -7,7 +7,6 @@ cache:
   - $HOME/.cache/pip
   - $HOME/download
 python:
-  - "2.6"
   - "2.7"
   - "3.3"
   - "3.4"
@@ -16,6 +15,8 @@ python:
 before_install:
   - pip install pip -U
   - pip install pytest -U
+  - pip install codecov -U
+  - pip install pytest-cov -U
 install:
   - travis_retry pip install -e .
 script: 

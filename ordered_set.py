@@ -4,21 +4,12 @@ entry has an index that can be looked up.
 
 Based on a recipe originally posted to ActiveState Recipes by Raymond Hettiger,
 and released under the MIT license.
-
-Rob Speer's changes are as follows:
-
-    - changed the content from a doubly-linked list to a regular Python list.
-      Seriously, who wants O(1) deletes but O(N) lookups by index?
-    - add() returns the index of the added item
-    - index() just returns the index of an item
-    - added a __getstate__ and __setstate__ so it can be pickled
-    - added __getitem__
 """
 import collections
 import itertools as it
 
 SLICE_ALL = slice(None)
-__version__ = '3.0.0'
+__version__ = "3.0.0"
 
 
 def is_iterable(obj):
@@ -34,7 +25,11 @@ def is_iterable(obj):
     We don't need to check for the Python 2 `unicode` type, because it doesn't
     have an `__iter__` attribute anyway.
     """
-    return hasattr(obj, '__iter__') and not isinstance(obj, str) and not isinstance(obj, tuple)
+    return (
+        hasattr(obj, "__iter__")
+        and not isinstance(obj, str)
+        and not isinstance(obj, tuple)
+    )
 
 
 class OrderedSet(collections.MutableSet, collections.Sequence):
@@ -46,6 +41,7 @@ class OrderedSet(collections.MutableSet, collections.Sequence):
         >>> OrderedSet([1, 1, 2, 3, 2])
         OrderedSet([1, 2, 3])
     """
+
     def __init__(self, iterable=None):
         self.items = []
         self.map = {}
@@ -71,8 +67,8 @@ class OrderedSet(collections.MutableSet, collections.Sequence):
         If `index` is a slice, you will get back that slice of items. If it's
         the slice [:], a copy of this object is returned.
 
-        If `index` is an iterable, you'll get the OrderedSet of items
-        corresponding to those indices. This is similar to NumPy's
+        If `index` is a list or a similar iterable, you'll get the OrderedSet
+        of items corresponding to those indices. This is similar to NumPy's
         "fancy indexing".
 
         Example:
@@ -82,7 +78,7 @@ class OrderedSet(collections.MutableSet, collections.Sequence):
         """
         if index == SLICE_ALL:
             return self.copy()
-        elif hasattr(index, '__index__') or isinstance(index, slice):
+        elif hasattr(index, "__index__") or isinstance(index, slice):
             result = self.items[index]
             if isinstance(result, list):
                 return self.__class__(result)
@@ -91,8 +87,7 @@ class OrderedSet(collections.MutableSet, collections.Sequence):
         elif is_iterable(index):
             return self.__class__([self.items[i] for i in index])
         else:
-            raise TypeError(
-                "Don't know how to index an OrderedSet by %r" % index)
+            raise TypeError("Don't know how to index an OrderedSet by %r" % index)
 
     def copy(self):
         """
@@ -156,6 +151,7 @@ class OrderedSet(collections.MutableSet, collections.Sequence):
             self.map[key] = len(self.items)
             self.items.append(key)
         return self.map[key]
+
     append = add
 
     def update(self, sequence):
@@ -175,7 +171,9 @@ class OrderedSet(collections.MutableSet, collections.Sequence):
             for item in sequence:
                 item_index = self.add(item)
         except TypeError:
-            raise ValueError('Argument needs to be an iterable, got %s' % type(sequence))
+            raise ValueError(
+                "Argument needs to be an iterable, got %s" % type(sequence)
+            )
         return item_index
 
     def index(self, key):
@@ -207,7 +205,7 @@ class OrderedSet(collections.MutableSet, collections.Sequence):
             3
         """
         if not self.items:
-            raise KeyError('Set is empty')
+            raise KeyError("Set is empty")
 
         elem = self.items[-1]
         del self.items[-1]
@@ -263,8 +261,8 @@ class OrderedSet(collections.MutableSet, collections.Sequence):
 
     def __repr__(self):
         if not self:
-            return '%s()' % (self.__class__.__name__,)
-        return '%s(%r)' % (self.__class__.__name__, list(self))
+            return "%s()" % (self.__class__.__name__,)
+        return "%s(%r)" % (self.__class__.__name__, list(self))
 
     def __eq__(self, other):
         """
@@ -282,11 +280,12 @@ class OrderedSet(collections.MutableSet, collections.Sequence):
             >>> self == OrderedSet([3, 2, 1])
             False
         """
-        # In python 2 deque is not a Sequence,
-        # always treat deque it as one for compatibility
+        # In Python 2 deque is not a Sequence, so treat it as one for
+        # consistent behavior with Python 3.
         if isinstance(other, (collections.Sequence, collections.deque)):
-            # Ordered Check
-            return len(self) == len(other) and self.items == list(other)
+            # Check that this OrderedSet contains the same elements, in the
+            # same order, as the other object.
+            return list(self) == list(other)
         try:
             other_as_set = set(other)
         except TypeError:
