@@ -9,7 +9,7 @@ entry has an index that can be looked up.
 Based on a recipe originally posted to ActiveState Recipes by Raymond Hettiger,
 and released under the MIT license:
 
-    http://code.activestate.com/recipes/576694-orderedset/
+http://code.activestate.com/recipes/576694-orderedset/
 
 This module's changes are as follows:
 
