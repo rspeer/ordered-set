@@ -183,7 +183,7 @@ def test_comparisons():
     # Comparison operators on sets actually test for subset and superset.
     assert OrderedSet([1, 2]) < OrderedSet([1, 2, 3])
     assert OrderedSet([1, 2]) > OrderedSet([1])
-    
+
     # MutableSet subclasses aren't comparable to set on 3.3.
     if tuple(sys.version_info) >= (3, 4):
         assert OrderedSet([1, 2]) > {1}
@@ -220,3 +220,49 @@ def test_unordered_inequality():
     # Corner case: OrderedDict is not a Sequence, so we don't check for order,
     # even though it does have the concept of order.
     assert OrderedSet([1, 2]) != collections.OrderedDict([(2, 2), (3, 1)])
+
+
+def test_bitwise_and():
+    """
+    # xdoctest ~/code/ordered-set/test.py test_bitwise_and
+    pytest ~/code/ordered-set/test.py -s -k test_bitwise_and
+    """
+    import operator
+    import itertools as it
+
+    def allsame(iterable, eq=operator.eq):
+            iter_ = iter(iterable)
+            try:
+                first = next(iter_)
+            except StopIteration:
+                return True
+            return all(eq(first, item) for item in iter_)
+
+    def check_results(*results, **kw):
+        name = kw.get('name', 'set test')
+        datas = kw.get('datas', [])
+        if not allsame(results):
+            raise AssertionError('Not all same {} for {} with datas={}'.format(
+                results, name, datas))
+        for a, b in it.combinations(results, 2):
+            if not isinstance(a, (bool, int)):
+                assert a is not b, name + ' should all be different items'
+
+    data1 = OrderedSet([12, 13, 1, 8, 16, 15, 9, 11, 18, 6, 4, 3, 19, 17])
+    data2 = OrderedSet([19, 4, 9, 3, 2, 10, 15, 17, 11, 13, 20, 6, 14, 16, 8])
+    print('\ndata1 = {!r}'.format(data1))
+    print('data2 = {!r}'.format(data2))
+    result1 = data1.copy()
+    result1.intersection_update(data2)
+    # This requires a custom & operation apparently
+    result2 = (data1 & data2)
+    result3 = (data1.intersection(data2))
+    print('result1 = {!r}'.format(result1))
+    print('result2 = {!r}'.format(result2))
+    print('result3 = {!r}\n'.format(result3))
+    # result1 = OrderedSet([13, 8, 16, 15, 9, 11, 6, 4, 3, 19, 17])
+    # result2 = OrderedSet([13, 8, 16, 15, 9, 11, 6, 4, 3, 19, 17])
+    # result3 = OrderedSet([13, 8, 16, 15, 9, 11, 6, 4, 3, 19, 17])
+
+    check_results(result1, result2, result3, datas=(data1, data2),
+                  name='isect')

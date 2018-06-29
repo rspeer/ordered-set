@@ -315,6 +315,10 @@ class OrderedSet(collections.MutableSet, collections.Sequence):
         items = it.chain.from_iterable(containers)
         return cls(items)
 
+    def __and__(self, other):
+        # the parent implementation of this is backwards
+        return self.intersection(other)
+
     def intersection(self, *sets):
         """
         Returns elements in common between all sets. Order is defined only
