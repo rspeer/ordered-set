@@ -9,7 +9,7 @@ import collections
 import itertools as it
 
 SLICE_ALL = slice(None)
-__version__ = "3.0.0"
+__version__ = "3.0.1"
 
 
 def is_iterable(obj):
@@ -314,6 +314,10 @@ class OrderedSet(collections.MutableSet, collections.Sequence):
         containers = map(list, it.chain([self], sets))
         items = it.chain.from_iterable(containers)
         return cls(items)
+
+    def __and__(self, other):
+        # the parent implementation of this is backwards
+        return self.intersection(other)
 
     def intersection(self, *sets):
         """

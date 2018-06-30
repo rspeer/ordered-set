@@ -2,6 +2,9 @@ import pickle
 import pytest
 import collections
 import sys
+import operator
+import itertools as it
+import random
 from ordered_set import OrderedSet
 
 
@@ -183,7 +186,7 @@ def test_comparisons():
     # Comparison operators on sets actually test for subset and superset.
     assert OrderedSet([1, 2]) < OrderedSet([1, 2, 3])
     assert OrderedSet([1, 2]) > OrderedSet([1])
-    
+
     # MutableSet subclasses aren't comparable to set on 3.3.
     if tuple(sys.version_info) >= (3, 4):
         assert OrderedSet([1, 2]) > {1}
@@ -220,3 +223,141 @@ def test_unordered_inequality():
     # Corner case: OrderedDict is not a Sequence, so we don't check for order,
     # even though it does have the concept of order.
     assert OrderedSet([1, 2]) != collections.OrderedDict([(2, 2), (3, 1)])
+
+
+def allsame_(iterable, eq=operator.eq):
+    """ returns True of all items in iterable equal each other """
+    iter_ = iter(iterable)
+    try:
+        first = next(iter_)
+    except StopIteration:
+        return True
+    return all(eq(first, item) for item in iter_)
+
+
+def check_results_(results, datas, name):
+    """
+    helper for binary operator tests.
+
+    check that all results have the same value, but are different items.
+    data and name are used to indicate what sort of tests is run.
+    """
+    if not allsame_(results):
+        raise AssertionError('Not all same {} for {} with datas={}'.format(
+            results, name, datas))
+    for a, b in it.combinations(results, 2):
+        if not isinstance(a, (bool, int)):
+            assert a is not b, name + ' should all be different items'
+
+
+def _operator_consistency_testdata():
+    """
+    Predefined and random data used to test operator consistency.
+    """
+    # test case 1
+    data1 = OrderedSet([5, 3, 1, 4])
+    data2 = OrderedSet([1, 4])
+    yield data1, data2
+
+    # first set is empty
+    data1 = OrderedSet([])
+    data2 = OrderedSet([3, 1, 2])
+    yield data1, data2
+
+    # second set is empty
+    data1 = OrderedSet([3, 1, 2])
+    data2 = OrderedSet([])
+    yield data1, data2
+
+    # both sets are empty
+    data1 = OrderedSet([])
+    data2 = OrderedSet([])
+    yield data1, data2
+
+    # random test cases
+    rng = random.Random(0)
+    a, b = 20, 20
+    for _ in range(10):
+        data1 = OrderedSet(rng.randint(0, a) for _ in range(b))
+        data2 = OrderedSet(rng.randint(0, a) for _ in range(b))
+        yield data1, data2
+        yield data2, data1
+
+
+def test_operator_consistency_isect():
+    for data1, data2 in _operator_consistency_testdata():
+        result1 = data1.copy()
+        result1.intersection_update(data2)
+        result2 = (data1 & data2)
+        result3 = (data1.intersection(data2))
+        check_results_([result1, result2, result3], datas=(data1, data2),
+                       name='isect')
+
+
+def test_operator_consistency_difference():
+    for data1, data2 in _operator_consistency_testdata():
+        result1 = data1.copy()
+        result1.difference_update(data2)
+        result2 = (data1 - data2)
+        result3 = (data1.difference(data2))
+        check_results_([result1, result2, result3], datas=(data1, data2),
+                       name='difference')
+
+
+def test_operator_consistency_xor():
+    for data1, data2 in _operator_consistency_testdata():
+        result1 = data1.copy()
+        result1.symmetric_difference_update(data2)
+        result2 = (data1 ^ data2)
+        result3 = (data1.symmetric_difference(data2))
+        check_results_([result1, result2, result3], datas=(data1, data2),
+                       name='xor')
+
+
+def test_operator_consistency_union():
+    for data1, data2 in _operator_consistency_testdata():
+        result1 = data1.copy()
+        result1.update(data2)
+        result2 = (data1 | data2)
+        result3 = (data1.union(data2))
+        check_results_([result1, result2, result3], datas=(data1, data2),
+                       name='union')
+
+
+def test_operator_consistency_subset():
+    for data1, data2 in _operator_consistency_testdata():
+        result1 = data1 <= data2
+        result2 = data1.issubset(data2)
+        result3 = set(data1).issubset(set(data2))
+        check_results_([result1, result2, result3], datas=(data1, data2),
+                       name='subset')
+
+
+def test_operator_consistency_superset():
+    for data1, data2 in _operator_consistency_testdata():
+        result1 = data1 >= data2
+        result2 = data1.issuperset(data2)
+        result3 = set(data1).issuperset(set(data2))
+        check_results_([result1, result2, result3], datas=(data1, data2),
+                       name='superset')
+
+
+def test_operator_consistency_disjoint():
+    for data1, data2 in _operator_consistency_testdata():
+        result1 = data1.isdisjoint(data2)
+        result2 = len(data1.intersection(data2)) == 0
+        check_results_([result1, result2], datas=(data1, data2),
+                       name='disjoint')
+
+
+def test_bitwise_and_consistency():
+    # Specific case that was failing without explicit __and__ definition
+    data1 = OrderedSet([12, 13, 1, 8, 16, 15, 9, 11, 18, 6, 4, 3, 19, 17])
+    data2 = OrderedSet([19, 4, 9, 3, 2, 10, 15, 17, 11, 13, 20, 6, 14, 16, 8])
+    result1 = data1.copy()
+    result1.intersection_update(data2)
+    # This requires a custom & operation apparently
+    result2 = (data1 & data2)
+    result3 = (data1.intersection(data2))
+    check_results_([result1, result2, result3], datas=(data1, data2),
+                   name='isect')
