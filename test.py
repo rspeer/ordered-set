@@ -194,7 +194,7 @@ def test_comparisons():
 
 def test_unordered_equality():
     # Unordered set checks order against non-sequences.
-    assert OrderedSet([1, 2]) == set([1, 2])
+    assert OrderedSet([1, 2]) == {1, 2}
     assert OrderedSet([1, 2]) == frozenset([2, 1])
 
     assert OrderedSet([1, 2]) == {1: 'a', 2: 'b'}
