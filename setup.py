@@ -2,16 +2,15 @@ from setuptools import setup
 
 DESCRIPTION = open('README.md').read()
 
-
 setup(
     name="ordered-set",
-    version = '3.0.1',
+    version='3.0.1',
     maintainer='Luminoso Technologies, Inc.',
     maintainer_email='rspeer@luminoso.com',
-    license = "MIT-LICENSE",
-    url = 'http://github.com/LuminosoInsight/ordered-set',
-    platforms = ["any"],
-    description = "A MutableSet that remembers its order, so that every entry has an index.",
+    license="MIT-LICENSE",
+    url='http://github.com/LuminosoInsight/ordered-set',
+    platforms=["any"],
+    description="A MutableSet that remembers its order, so that every entry has an index.",
     long_description=DESCRIPTION,
     long_description_content_type='text/markdown',
     py_modules=['ordered_set'],
