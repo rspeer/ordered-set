@@ -5,8 +5,14 @@ entry has an index that can be looked up.
 Based on a recipe originally posted to ActiveState Recipes by Raymond Hettiger,
 and released under the MIT license.
 """
-import collections
 import itertools as it
+from collections import deque
+try:
+    # Python 3
+    from collections.abc import MutableSet, Sequence
+except ImportError:
+    # Python 2.7
+    from collections import MutableSet, Sequence
 
 SLICE_ALL = slice(None)
 __version__ = "3.0.1"
@@ -32,7 +38,7 @@ def is_iterable(obj):
     )
 
 
-class OrderedSet(collections.MutableSet, collections.Sequence):
+class OrderedSet(MutableSet, Sequence):
     """
     An OrderedSet is a custom MutableSet that remembers its order, so that
     every entry has an index that can be looked up.
@@ -282,7 +288,7 @@ class OrderedSet(collections.MutableSet, collections.Sequence):
         """
         # In Python 2 deque is not a Sequence, so treat it as one for
         # consistent behavior with Python 3.
-        if isinstance(other, (collections.Sequence, collections.deque)):
+        if isinstance(other, (Sequence, deque)):
             # Check that this OrderedSet contains the same elements, in the
             # same order, as the other object.
             return list(self) == list(other)
