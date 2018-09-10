@@ -5,6 +5,7 @@ cache:
   apt: true
   directories:
   - $HOME/.cache/pip
+  - $HOME/.pip-cache
   - $HOME/download
 python:
   - "2.7"
@@ -25,8 +26,4 @@ script:
     
 after_success: 
   - codecov 
-cache: 
-    apt: true
-    directories:
-        - $HOME/.pip-cache
 
