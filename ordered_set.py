@@ -117,7 +117,7 @@ class OrderedSet(MutableSet, Sequence):
             # This could have been done more gracefully by always putting the state
             # in a tuple, but this way is backwards- and forwards- compatible with
             # previous versions of OrderedSet.
-            return (None,)
+            return None,
         else:
             return list(self)
 
