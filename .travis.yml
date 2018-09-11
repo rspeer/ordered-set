@@ -13,15 +13,6 @@ python:
   - "3.5"
   - "3.6"
 
-# As of September 2018, this is the recommended way to use Python 3.7 with
-# Travis while still supporting 3.4.
-# https://github.com/travis-ci/travis-ci/issues/9815
-matrix:
-  include:
-    - python: 3.7
-    - sudo: required
-    - dist: xenial
-
 before_install:
   - pip install pip -U
   - pip install pytest -U
