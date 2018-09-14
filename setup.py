@@ -4,7 +4,7 @@ DESCRIPTION = open('README.md').read()
 
 setup(
     name="ordered-set",
-    version='3.0.1',
+    version='3.0.2',
     maintainer='Luminoso Technologies, Inc.',
     maintainer_email='rspeer@luminoso.com',
     license="MIT-LICENSE",
@@ -16,7 +16,6 @@ setup(
     py_modules=['ordered_set'],
     package_data={'': ['MIT-LICENSE']},
     include_package_data=True,
-    setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     python_requires='>=2.7',
     classifiers=[
