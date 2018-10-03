@@ -5,7 +5,7 @@ DESCRIPTION = open('README.md').read()
 setup(
     name="ordered-set",
     version='3.0.2',
-    maintainer='Luminoso Technologies, Inc.',
+    maintainer='Robyn Speer',
     maintainer_email='rspeer@luminoso.com',
     license="MIT-LICENSE",
     url='http://github.com/LuminosoInsight/ordered-set',
