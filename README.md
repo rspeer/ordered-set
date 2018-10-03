@@ -73,7 +73,7 @@ and implements the abstract base classes `collections.MutableSet` and
 
 ## Authors
 
-OrderedSet was implemented by Rob Speer. Jon Crall contributed changes and
+OrderedSet was implemented by Robyn Speer. Jon Crall contributed changes and
 tests to make it fit the Python set API.
 
 
