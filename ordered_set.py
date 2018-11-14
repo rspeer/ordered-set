@@ -199,6 +199,9 @@ class OrderedSet(MutableSet, Sequence):
             return [self.index(subkey) for subkey in key]
         return self.map[key]
 
+    # Provide some compatibility with pd.Index
+    get_loc = index
+
     def pop(self):
         """
         Remove and return the last element from the set.
