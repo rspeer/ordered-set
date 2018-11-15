@@ -71,9 +71,16 @@ and implements the abstract base classes `collections.MutableSet` and
 `collections.Sequence`.
 
 
+## Type hinting
+To use type hinting features install `ordered-set-stubs` package from
+[PyPI](https://pypi.org/project/ordered-set-stubs/):
+
+    $ pip install ordered-set-stubs
+
+
 ## Authors
 
-OrderedSet was implemented by Rob Speer. Jon Crall contributed changes and
+OrderedSet was implemented by Robyn Speer. Jon Crall contributed changes and
 tests to make it fit the Python set API.
 
 
