@@ -63,9 +63,12 @@ indexing".
     >>> letters.index(['a', 'r', 'c'])
     [0, 2, 3]
 
+An OrderedSet can be used as a bi-directional mapping between a sparse
+vocabulary and dense index numbers.
+
 This combination of features makes OrderedSet a simple implementation of many
-of the things that `pandas.Index` is used for. An OrderedSet can be used as a
-bi-directional mapping between a sparse vocabulary and dense index numbers.
+of the things that `pandas.Index` is used for, and many of its operations are
+faster than the equivalent pandas operations.
 
 For further compatibility with pandas.Index, `get_loc` (the pandas method for
 looking up a single index) and `get_indexer` (the pandas method for fancy
