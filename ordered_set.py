@@ -78,8 +78,8 @@ class OrderedSet(MutableSet, Sequence):
         "fancy indexing".
 
         Example:
-            >>> self = OrderedSet([1, 2, 3])
-            >>> self[1]
+            >>> oset = OrderedSet([1, 2, 3])
+            >>> oset[1]
             2
         """
         if index == SLICE_ALL:
@@ -100,11 +100,11 @@ class OrderedSet(MutableSet, Sequence):
         Return a shallow copy of this object.
 
         Example:
-            >>> self = OrderedSet([1, 2, 3])
-            >>> other = self.copy()
-            >>> self == other
+            >>> this = OrderedSet([1, 2, 3])
+            >>> other = this.copy()
+            >>> this == other
             True
-            >>> self is other
+            >>> this is other
             False
         """
         return self.__class__(self)
@@ -147,10 +147,10 @@ class OrderedSet(MutableSet, Sequence):
         had.
 
         Example:
-            >>> self = OrderedSet()
-            >>> self.append(3)
+            >>> oset = OrderedSet()
+            >>> oset.append(3)
             0
-            >>> print(self)
+            >>> print(oset)
             OrderedSet([3])
         """
         if key not in self.map:
@@ -166,10 +166,10 @@ class OrderedSet(MutableSet, Sequence):
         of the last element inserted.
 
         Example:
-            >>> self = OrderedSet([1, 2, 3])
-            >>> self.update([3, 1, 5, 1, 4])
+            >>> oset = OrderedSet([1, 2, 3])
+            >>> oset.update([3, 1, 5, 1, 4])
             4
-            >>> print(self)
+            >>> print(oset)
             OrderedSet([1, 2, 3, 5, 4])
         """
         item_index = None
@@ -191,8 +191,8 @@ class OrderedSet(MutableSet, Sequence):
         this returns a list of indices.
 
         Example:
-            >>> self = OrderedSet([1, 2, 3])
-            >>> self.index(2)
+            >>> oset = OrderedSet([1, 2, 3])
+            >>> oset.index(2)
             1
         """
         if is_iterable(key):
@@ -209,8 +209,8 @@ class OrderedSet(MutableSet, Sequence):
         Raises KeyError if the set is empty.
 
         Example:
-            >>> self = OrderedSet([1, 2, 3])
-            >>> self.pop()
+            >>> oset = OrderedSet([1, 2, 3])
+            >>> oset.pop()
             3
         """
         if not self.items:
@@ -229,12 +229,12 @@ class OrderedSet(MutableSet, Sequence):
         *does* raise an error when asked to remove a non-existent item.
 
         Example:
-            >>> self = OrderedSet([1, 2, 3])
-            >>> self.discard(2)
-            >>> print(self)
+            >>> oset = OrderedSet([1, 2, 3])
+            >>> oset.discard(2)
+            >>> print(oset)
             OrderedSet([1, 3])
-            >>> self.discard(2)
-            >>> print(self)
+            >>> oset.discard(2)
+            >>> print(oset)
             OrderedSet([1, 3])
         """
         if key in self:
@@ -279,14 +279,14 @@ class OrderedSet(MutableSet, Sequence):
         Sequence, then order is checked, otherwise it is ignored.
 
         Example:
-            >>> self = OrderedSet([1, 3, 2])
-            >>> self == [1, 3, 2]
+            >>> oset = OrderedSet([1, 3, 2])
+            >>> oset == [1, 3, 2]
             True
-            >>> self == [1, 2, 3]
+            >>> oset == [1, 2, 3]
             False
-            >>> self == [2, 3]
+            >>> oset == [2, 3]
             False
-            >>> self == OrderedSet([3, 2, 1])
+            >>> oset == OrderedSet([3, 2, 1])
             False
         """
         # In Python 2 deque is not a Sequence, so treat it as one for
@@ -309,15 +309,13 @@ class OrderedSet(MutableSet, Sequence):
         Each items order is defined by its first appearance.
 
         Example:
-            >>> self = OrderedSet.union(OrderedSet([3, 1, 4, 1, 5]), [1, 3], [2, 0])
-            >>> print(self)
+            >>> oset = OrderedSet.union(OrderedSet([3, 1, 4, 1, 5]), [1, 3], [2, 0])
+            >>> print(oset)
             OrderedSet([3, 1, 4, 5, 2, 0])
-            >>> self.union([8, 9])
+            >>> oset.union([8, 9])
             OrderedSet([3, 1, 4, 5, 2, 0, 8, 9])
-            >>> self | {10}
+            >>> oset | {10}
             OrderedSet([3, 1, 4, 5, 2, 0, 10])
-            >>> OrderedSet.union(OrderedSet([1, 2, 3]))
-            OrderedSet([1, 2, 3])
         """
         cls = self.__class__ if isinstance(self, OrderedSet) else OrderedSet
         containers = map(list, it.chain([self], sets))
@@ -334,13 +332,11 @@ class OrderedSet(MutableSet, Sequence):
         by the first set.
 
         Example:
-            >>> self = OrderedSet.intersection(OrderedSet([0, 1, 2, 3]), [1, 2, 3])
-            >>> print(self)
+            >>> oset = OrderedSet.intersection(OrderedSet([0, 1, 2, 3]), [1, 2, 3])
+            >>> print(oset)
             OrderedSet([1, 2, 3])
-            >>> self.intersection([2, 4, 5], [1, 2, 3, 4])
+            >>> oset.intersection([2, 4, 5], [1, 2, 3, 4])
             OrderedSet([2])
-            >>> OrderedSet.intersection(OrderedSet([1, 2, 3]))
-            OrderedSet([1, 2, 3])
         """
         cls = self.__class__ if isinstance(self, OrderedSet) else OrderedSet
         if sets:
@@ -402,9 +398,9 @@ class OrderedSet(MutableSet, Sequence):
         (I.e. all elements that are in exactly one of the sets.)
 
         Example:
-            >>> self = OrderedSet([1, 4, 3, 5, 7])
+            >>> this = OrderedSet([1, 4, 3, 5, 7])
             >>> other = OrderedSet([9, 7, 1, 3, 2])
-            >>> self.symmetric_difference(other)
+            >>> this.symmetric_difference(other)
             OrderedSet([4, 5, 9, 2])
         """
         cls = self.__class__ if isinstance(self, OrderedSet) else OrderedSet
@@ -414,12 +410,12 @@ class OrderedSet(MutableSet, Sequence):
 
     def difference_update(self, *sets):
         """
-        Returns a copy of self with items from other removed
+        Update this OrderedSet to remove items from one or more other sets.
 
         Example:
-            >>> self = OrderedSet([1, 2, 3])
-            >>> self.difference_update(OrderedSet([2]))
-            >>> print(self)
+            >>> this = OrderedSet([1, 2, 3])
+            >>> this.difference_update(OrderedSet([2, 4]))
+            >>> print(this)
             OrderedSet([1, 3])
         """
         for item in it.chain.from_iterable(sets):
@@ -427,14 +423,14 @@ class OrderedSet(MutableSet, Sequence):
 
     def intersection_update(self, other):
         """
-        Update a set with the intersection of itself and another.
-        Order depends only on the first element
+        Update this OrderedSet to keep only items in another set, preserving
+        their order in this set.
 
         Example:
-            >>> self = OrderedSet([1, 4, 3, 5, 7])
+            >>> this = OrderedSet([1, 4, 3, 5, 7])
             >>> other = OrderedSet([9, 7, 1, 3, 2])
-            >>> self.intersection_update(other)
-            >>> print(self)
+            >>> this.intersection_update(other)
+            >>> print(this)
             OrderedSet([1, 3, 7])
         """
         to_remove = [item for item in self if item not in other]
@@ -443,14 +439,14 @@ class OrderedSet(MutableSet, Sequence):
 
     def symmetric_difference_update(self, other):
         """
-        Update a set with the intersection of itself and another.
-        Order depends only on the first element
+        Update this OrderedSet to remove items from another set, then
+        add items from the other set that were not present in this set.
 
         Example:
-            >>> self = OrderedSet([1, 4, 3, 5, 7])
+            >>> this = OrderedSet([1, 4, 3, 5, 7])
             >>> other = OrderedSet([9, 7, 1, 3, 2])
-            >>> self.symmetric_difference_update(other)
-            >>> print(self)
+            >>> this.symmetric_difference_update(other)
+            >>> print(this)
             OrderedSet([4, 5, 9, 2])
         """
         cls = self.__class__ if isinstance(self, OrderedSet) else OrderedSet
