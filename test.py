@@ -61,6 +61,12 @@ def test_indexing():
         pass
 
 
+def test_get_loc():
+    set1 = OrderedSet('abracadabra')
+    assert set1.get_loc('b') == 1
+    assert set1.get_loc(['b', 'r']) == [1, 2]
+
+
 def test_tuples():
     set1 = OrderedSet()
     tup = ('tuple', 1)

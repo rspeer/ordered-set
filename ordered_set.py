@@ -15,7 +15,7 @@ except ImportError:
     from collections import MutableSet, Sequence
 
 SLICE_ALL = slice(None)
-__version__ = "3.0.1"
+__version__ = "3.1"
 
 
 def is_iterable(obj):
