@@ -408,6 +408,16 @@ class OrderedSet(MutableSet, Sequence):
         diff2 = cls(other).difference(self)
         return diff1.union(diff2)
 
+    def _update_items(self, items):
+        """
+        Replace the 'items' list of this OrderedSet with a new one, updating
+        self.map accordingly.
+        """
+        self.items = items
+        self.map = {
+            item: idx for (idx, item) in enumerate(items)
+        }
+
     def difference_update(self, *sets):
         """
         Update this OrderedSet to remove items from one or more other sets.
@@ -418,8 +428,13 @@ class OrderedSet(MutableSet, Sequence):
             >>> print(this)
             OrderedSet([1, 3])
         """
-        for item in it.chain.from_iterable(sets):
-            self.discard(item)
+        items_to_remove = set()
+        for other in sets:
+            items_to_remove |= set(other)
+        self._update_items([
+            item for item in self.items
+            if item not in items_to_remove
+        ])
 
     def intersection_update(self, other):
         """
@@ -433,9 +448,11 @@ class OrderedSet(MutableSet, Sequence):
             >>> print(this)
             OrderedSet([1, 3, 7])
         """
-        to_remove = [item for item in self if item not in other]
-        for item in to_remove:
-            self.discard(item)
+        other = set(other)
+        self._update_items([
+            item for item in self.items
+            if item in other
+        ])
 
     def symmetric_difference_update(self, other):
         """
@@ -449,7 +466,9 @@ class OrderedSet(MutableSet, Sequence):
             >>> print(this)
             OrderedSet([4, 5, 9, 2])
         """
-        cls = self.__class__ if isinstance(self, OrderedSet) else OrderedSet
-        diff2 = cls(other).difference(self)
-        self.difference_update(other)
-        self.update(diff2)
+        items_to_add = [item for item in other if item not in self]
+        items_to_remove = set(other)
+        self._update_items([
+            item for item in self.items
+            if item not in items_to_remove
+        ] + items_to_add)
