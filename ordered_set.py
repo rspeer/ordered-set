@@ -71,12 +71,14 @@ class OrderedSet(MutableSet, Sequence):
         """
         Get the item at a given index.
 
-        If `index` is a slice, you will get back that slice of items. If it's
-        the slice [:], a copy of this object is returned.
+        If `index` is a slice, you will get back that slice of items, as a
+        new OrderedSet.
 
-        If `index` is a list or a similar iterable, you'll get the OrderedSet
-        of items corresponding to those indices. This is similar to NumPy's
-        "fancy indexing".
+        If `index` is a list or a similar iterable, you'll get a list of
+        items corresponding to those indices. This is similar to NumPy's
+        "fancy indexing". The result is not an OrderedSet because you may ask
+        for duplicate indices, and the number of elements returned should be
+        the number of elements asked for.
 
         Example:
             >>> oset = OrderedSet([1, 2, 3])
@@ -92,7 +94,7 @@ class OrderedSet(MutableSet, Sequence):
             else:
                 return result
         elif is_iterable(index):
-            return self.__class__([self.items[i] for i in index])
+            return [self.items[i] for i in index]
         else:
             raise TypeError("Don't know how to index an OrderedSet by %r" % index)
 
@@ -202,6 +204,7 @@ class OrderedSet(MutableSet, Sequence):
 
     # Provide some compatibility with pd.Index
     get_loc = index
+    get_indexer = index
 
     def pop(self):
         """

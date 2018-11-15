@@ -53,10 +53,32 @@ def test_indexing():
         set1.index('br')
 
 
-def test_get_loc():
+class FancyIndexTester:
+    """
+    Make sure we can index by a NumPy ndarray, without having to import
+    NumPy.
+    """
+    def __init__(self, indices):
+        self.indices = indices
+
+    def __iter__(self):
+        return iter(self.indices)
+
+    def __eq__(self, other):
+        # Emulate NumPy being fussy about the == operator
+        raise TypeError
+
+
+def test_fancy_index_class():
+    set1 = OrderedSet('abracadabra')
+    indexer = FancyIndexTester([1, 0, 4, 3, 0, 2])
+    assert ''.join(set1[indexer]) == 'badcar'
+
+
+def test_pandas_compat():
     set1 = OrderedSet('abracadabra')
     assert set1.get_loc('b') == 1
-    assert set1.get_loc(['b', 'r']) == [1, 2]
+    assert set1.get_indexer(['b', 'r']) == [1, 2]
 
 
 def test_tuples():
