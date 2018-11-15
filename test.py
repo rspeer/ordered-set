@@ -242,8 +242,9 @@ def check_results_(results, datas, name):
     data and name are used to indicate what sort of tests is run.
     """
     if not allsame_(results):
-        raise AssertionError('Not all same {} for {} with datas={}'.format(
-            results, name, datas))
+        raise AssertionError(
+            'Not all same {} for {} with datas={}'.format(results, name, datas)
+        )
     for a, b in it.combinations(results, 2):
         if not isinstance(a, (bool, int)):
             assert a is not b, name + ' should all be different items'
@@ -287,40 +288,38 @@ def test_operator_consistency_isect():
     for data1, data2 in _operator_consistency_testdata():
         result1 = data1.copy()
         result1.intersection_update(data2)
-        result2 = (data1 & data2)
-        result3 = (data1.intersection(data2))
-        check_results_([result1, result2, result3], datas=(data1, data2),
-                       name='isect')
+        result2 = data1 & data2
+        result3 = data1.intersection(data2)
+        check_results_([result1, result2, result3], datas=(data1, data2), name='isect')
 
 
 def test_operator_consistency_difference():
     for data1, data2 in _operator_consistency_testdata():
         result1 = data1.copy()
         result1.difference_update(data2)
-        result2 = (data1 - data2)
-        result3 = (data1.difference(data2))
-        check_results_([result1, result2, result3], datas=(data1, data2),
-                       name='difference')
+        result2 = data1 - data2
+        result3 = data1.difference(data2)
+        check_results_(
+            [result1, result2, result3], datas=(data1, data2), name='difference'
+        )
 
 
 def test_operator_consistency_xor():
     for data1, data2 in _operator_consistency_testdata():
         result1 = data1.copy()
         result1.symmetric_difference_update(data2)
-        result2 = (data1 ^ data2)
-        result3 = (data1.symmetric_difference(data2))
-        check_results_([result1, result2, result3], datas=(data1, data2),
-                       name='xor')
+        result2 = data1 ^ data2
+        result3 = data1.symmetric_difference(data2)
+        check_results_([result1, result2, result3], datas=(data1, data2), name='xor')
 
 
 def test_operator_consistency_union():
     for data1, data2 in _operator_consistency_testdata():
         result1 = data1.copy()
         result1.update(data2)
-        result2 = (data1 | data2)
-        result3 = (data1.union(data2))
-        check_results_([result1, result2, result3], datas=(data1, data2),
-                       name='union')
+        result2 = data1 | data2
+        result3 = data1.union(data2)
+        check_results_([result1, result2, result3], datas=(data1, data2), name='union')
 
 
 def test_operator_consistency_subset():
@@ -328,8 +327,7 @@ def test_operator_consistency_subset():
         result1 = data1 <= data2
         result2 = data1.issubset(data2)
         result3 = set(data1).issubset(set(data2))
-        check_results_([result1, result2, result3], datas=(data1, data2),
-                       name='subset')
+        check_results_([result1, result2, result3], datas=(data1, data2), name='subset')
 
 
 def test_operator_consistency_superset():
@@ -337,16 +335,16 @@ def test_operator_consistency_superset():
         result1 = data1 >= data2
         result2 = data1.issuperset(data2)
         result3 = set(data1).issuperset(set(data2))
-        check_results_([result1, result2, result3], datas=(data1, data2),
-                       name='superset')
+        check_results_(
+            [result1, result2, result3], datas=(data1, data2), name='superset'
+        )
 
 
 def test_operator_consistency_disjoint():
     for data1, data2 in _operator_consistency_testdata():
         result1 = data1.isdisjoint(data2)
         result2 = len(data1.intersection(data2)) == 0
-        check_results_([result1, result2], datas=(data1, data2),
-                       name='disjoint')
+        check_results_([result1, result2], datas=(data1, data2), name='disjoint')
 
 
 def test_bitwise_and_consistency():
@@ -356,7 +354,6 @@ def test_bitwise_and_consistency():
     result1 = data1.copy()
     result1.intersection_update(data2)
     # This requires a custom & operation apparently
-    result2 = (data1 & data2)
-    result3 = (data1.intersection(data2))
-    check_results_([result1, result2, result3], datas=(data1, data2),
-                   name='isect')
+    result2 = data1 & data2
+    result3 = data1.intersection(data2)
+    check_results_([result1, result2, result3], datas=(data1, data2), name='isect')

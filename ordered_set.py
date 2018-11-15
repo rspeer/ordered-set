@@ -7,6 +7,7 @@ and released under the MIT license.
 """
 import itertools as it
 from collections import deque
+
 try:
     # Python 3
     from collections.abc import MutableSet, Sequence
@@ -424,9 +425,7 @@ class OrderedSet(MutableSet, Sequence):
         self.map accordingly.
         """
         self.items = items
-        self.map = {
-            item: idx for (idx, item) in enumerate(items)
-        }
+        self.map = {item: idx for (idx, item) in enumerate(items)}
 
     def difference_update(self, *sets):
         """
@@ -441,10 +440,7 @@ class OrderedSet(MutableSet, Sequence):
         items_to_remove = set()
         for other in sets:
             items_to_remove |= set(other)
-        self._update_items([
-            item for item in self.items
-            if item not in items_to_remove
-        ])
+        self._update_items([item for item in self.items if item not in items_to_remove])
 
     def intersection_update(self, other):
         """
@@ -459,10 +455,7 @@ class OrderedSet(MutableSet, Sequence):
             OrderedSet([1, 3, 7])
         """
         other = set(other)
-        self._update_items([
-            item for item in self.items
-            if item in other
-        ])
+        self._update_items([item for item in self.items if item in other])
 
     def symmetric_difference_update(self, other):
         """
@@ -478,7 +471,6 @@ class OrderedSet(MutableSet, Sequence):
         """
         items_to_add = [item for item in other if item not in self]
         items_to_remove = set(other)
-        self._update_items([
-            item for item in self.items
-            if item not in items_to_remove
-        ] + items_to_add)
+        self._update_items(
+            [item for item in self.items if item not in items_to_remove] + items_to_add
+        )
