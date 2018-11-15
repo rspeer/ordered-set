@@ -82,7 +82,7 @@ class OrderedSet(MutableSet, Sequence):
             >>> oset[1]
             2
         """
-        if index == SLICE_ALL:
+        if isinstance(index, slice) and index == SLICE_ALL:
             return self.copy()
         elif hasattr(index, "__index__") or isinstance(index, slice):
             result = self.items[index]
