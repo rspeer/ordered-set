@@ -405,8 +405,12 @@ class OrderedSet(MutableSet, Sequence):
 
     def symmetric_difference(self, other):
         """
-        Return the symmetric difference of two sets as a new set.
-        (I.e. all elements that are in exactly one of the sets.)
+        Return the symmetric difference of two OrderedSets as a new set.
+        That is, the new set will contain all elements that are in exactly
+        one of the sets.
+
+        Their order will be preserved, with elements from `self` preceding
+        elements from `other`.
 
         Example:
             >>> this = OrderedSet([1, 4, 3, 5, 7])
@@ -436,6 +440,11 @@ class OrderedSet(MutableSet, Sequence):
             >>> this.difference_update(OrderedSet([2, 4]))
             >>> print(this)
             OrderedSet([1, 3])
+
+            >>> this = OrderedSet([1, 2, 3, 4, 5])
+            >>> this.difference_update(OrderedSet([2, 4]), OrderedSet([1, 4, 6]))
+            >>> print(this)
+            OrderedSet([3, 5])
         """
         items_to_remove = set()
         for other in sets:
