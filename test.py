@@ -8,11 +8,6 @@ import random
 from ordered_set import OrderedSet
 
 
-def eq_(item1, item2):
-    # replacement for a nosetest util
-    assert item1 == item2
-
-
 def test_pickle():
     set1 = OrderedSet('abracadabra')
     roundtrip = pickle.loads(pickle.dumps(set1))
@@ -27,9 +22,9 @@ def test_empty_pickle():
 
 def test_order():
     set1 = OrderedSet('abracadabra')
-    eq_(len(set1), 5)
-    eq_(set1, OrderedSet(['a', 'b', 'r', 'c', 'd']))
-    eq_(list(reversed(set1)), ['d', 'c', 'r', 'b', 'a'])
+    assert len(set1) == 5
+    assert set1 == OrderedSet(['a', 'b', 'r', 'c', 'd'])
+    assert list(reversed(set1)) == ['d', 'c', 'r', 'b', 'a']
 
 
 def test_binary_operations():
@@ -37,28 +32,25 @@ def test_binary_operations():
     set2 = OrderedSet('simsalabim')
     assert set1 != set2
 
-    eq_(set1 & set2, OrderedSet(['a', 'b']))
-    eq_(set1 | set2, OrderedSet(['a', 'b', 'r', 'c', 'd', 's', 'i', 'm', 'l']))
-    eq_(set1 - set2, OrderedSet(['r', 'c', 'd']))
+    assert set1 & set2 == OrderedSet(['a', 'b'])
+    assert set1 | set2 == OrderedSet(['a', 'b', 'r', 'c', 'd', 's', 'i', 'm', 'l'])
+    assert set1 - set2 == OrderedSet(['r', 'c', 'd'])
 
 
 def test_indexing():
     set1 = OrderedSet('abracadabra')
-    eq_(set1[:], set1)
-    eq_(set1.copy(), set1)
+    assert set1[:] == set1
+    assert set1.copy() == set1
     assert set1 is set1
     assert set1[:] is not set1
     assert set1.copy() is not set1
 
-    eq_(set1[[1, 2]], OrderedSet(['b', 'r']))
-    eq_(set1[1:3], OrderedSet(['b', 'r']))
-    eq_(set1.index('b'), 1)
-    eq_(set1.index(['b', 'r']), [1, 2])
-    try:
+    assert set1[[1, 2]] == OrderedSet(['b', 'r'])
+    assert set1[1:3] == OrderedSet(['b', 'r'])
+    assert set1.index('b') == 1
+    assert set1.index(['b', 'r']) == [1, 2]
+    with pytest.raises(KeyError):
         set1.index('br')
-        assert False, "Looking up a nonexistent key should be a KeyError"
-    except KeyError:
-        pass
 
 
 def test_get_loc():
@@ -71,8 +63,8 @@ def test_tuples():
     set1 = OrderedSet()
     tup = ('tuple', 1)
     set1.add(tup)
-    eq_(set1.index(tup), 0)
-    eq_(set1[0], tup)
+    assert set1.index(tup) == 0
+    assert set1[0] == tup
 
 
 def test_remove():

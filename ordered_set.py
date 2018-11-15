@@ -337,6 +337,8 @@ class OrderedSet(MutableSet, Sequence):
             OrderedSet([1, 2, 3])
             >>> oset.intersection([2, 4, 5], [1, 2, 3, 4])
             OrderedSet([2])
+            >>> oset.intersection()
+            OrderedSet([1, 2, 3])
         """
         cls = self.__class__ if isinstance(self, OrderedSet) else OrderedSet
         if sets:
@@ -353,12 +355,20 @@ class OrderedSet(MutableSet, Sequence):
         Example:
             >>> OrderedSet([1, 2, 3]).difference(OrderedSet([2]))
             OrderedSet([1, 3])
+            >>> OrderedSet([1, 2, 3]).difference(OrderedSet([2]), OrderedSet([3]))
+            OrderedSet([1])
             >>> OrderedSet([1, 2, 3]) - OrderedSet([2])
             OrderedSet([1, 3])
+            >>> OrderedSet([1, 2, 3]).difference()
+            OrderedSet([1, 2, 3])
         """
         cls = self.__class__
-        other = set.intersection(*map(set, sets))
-        return cls(item for item in self if item not in other)
+        if sets:
+            other = set.union(*map(set, sets))
+            items = (item for item in self if item not in other)
+        else:
+            items = self
+        return cls(items)
 
     def issubset(self, other):
         """
