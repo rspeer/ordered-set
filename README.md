@@ -107,5 +107,5 @@ iteration speed similar to this implementation.
 
 ## Compatibility
 
-OrderedSet is automatically tested on Python 2.7, 3.3, 3.4, 3.5, 3.6, and 3.7.
+OrderedSet is automatically tested on Python 2.7, 3.4, 3.5, 3.6, and 3.7.
 We've checked more informally that it works on PyPy and PyPy3.
