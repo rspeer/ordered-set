@@ -20,9 +20,8 @@ before_install:
   - pip install pytest-cov -U
 install:
   - travis_retry pip install -e .
-script: 
+script:
   - travis_wait pytest --doctest-modules --cov-config .coveragerc --cov-report html --cov=ordered_set test.py
-    
-after_success: 
-  - codecov 
 
+after_success:
+  - codecov
