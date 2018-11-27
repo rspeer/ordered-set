@@ -8,7 +8,7 @@ setup(
     maintainer='Robyn Speer',
     maintainer_email='rspeer@luminoso.com',
     license="MIT-LICENSE",
-    url='http://github.com/LuminosoInsight/ordered-set',
+    url='https://github.com/LuminosoInsight/ordered-set',
     platforms=["any"],
     description="A MutableSet that remembers its order, so that every entry has an index.",
     long_description=DESCRIPTION,

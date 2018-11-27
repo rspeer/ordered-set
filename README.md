@@ -89,7 +89,7 @@ tests to make it fit the Python set API.
 The original implementation of OrderedSet was a [recipe posted to ActiveState
 Recipes][recipe] by Raymond Hettiger, released under the MIT license.
 
-[recipe]: http://code.activestate.com/recipes/576694-orderedset/
+[recipe]: https://code.activestate.com/recipes/576694-orderedset/
 
 Hettiger's implementation kept its content in a doubly-linked list referenced by a
 dict. As a result, looking up an item by its index was an O(N) operation, while
