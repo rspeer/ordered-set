@@ -8,11 +8,6 @@ import random
 from ordered_set import OrderedSet
 
 
-def eq_(item1, item2):
-    # replacement for a nosetest util
-    assert item1 == item2
-
-
 def test_pickle():
     set1 = OrderedSet('abracadabra')
     roundtrip = pickle.loads(pickle.dumps(set1))
@@ -27,9 +22,9 @@ def test_empty_pickle():
 
 def test_order():
     set1 = OrderedSet('abracadabra')
-    eq_(len(set1), 5)
-    eq_(set1, OrderedSet(['a', 'b', 'r', 'c', 'd']))
-    eq_(list(reversed(set1)), ['d', 'c', 'r', 'b', 'a'])
+    assert len(set1) == 5
+    assert set1 == OrderedSet(['a', 'b', 'r', 'c', 'd'])
+    assert list(reversed(set1)) == ['d', 'c', 'r', 'b', 'a']
 
 
 def test_binary_operations():
@@ -37,36 +32,61 @@ def test_binary_operations():
     set2 = OrderedSet('simsalabim')
     assert set1 != set2
 
-    eq_(set1 & set2, OrderedSet(['a', 'b']))
-    eq_(set1 | set2, OrderedSet(['a', 'b', 'r', 'c', 'd', 's', 'i', 'm', 'l']))
-    eq_(set1 - set2, OrderedSet(['r', 'c', 'd']))
+    assert set1 & set2 == OrderedSet(['a', 'b'])
+    assert set1 | set2 == OrderedSet(['a', 'b', 'r', 'c', 'd', 's', 'i', 'm', 'l'])
+    assert set1 - set2 == OrderedSet(['r', 'c', 'd'])
 
 
 def test_indexing():
     set1 = OrderedSet('abracadabra')
-    eq_(set1[:], set1)
-    eq_(set1.copy(), set1)
+    assert set1[:] == set1
+    assert set1.copy() == set1
     assert set1 is set1
     assert set1[:] is not set1
     assert set1.copy() is not set1
 
-    eq_(set1[[1, 2]], OrderedSet(['b', 'r']))
-    eq_(set1[1:3], OrderedSet(['b', 'r']))
-    eq_(set1.index('b'), 1)
-    eq_(set1.index(['b', 'r']), [1, 2])
-    try:
+    assert set1[[1, 2]] == OrderedSet(['b', 'r'])
+    assert set1[1:3] == OrderedSet(['b', 'r'])
+    assert set1.index('b') == 1
+    assert set1.index(['b', 'r']) == [1, 2]
+    with pytest.raises(KeyError):
         set1.index('br')
-        assert False, "Looking up a nonexistent key should be a KeyError"
-    except KeyError:
-        pass
+
+
+class FancyIndexTester:
+    """
+    Make sure we can index by a NumPy ndarray, without having to import
+    NumPy.
+    """
+    def __init__(self, indices):
+        self.indices = indices
+
+    def __iter__(self):
+        return iter(self.indices)
+
+    def __eq__(self, other):
+        # Emulate NumPy being fussy about the == operator
+        raise TypeError
+
+
+def test_fancy_index_class():
+    set1 = OrderedSet('abracadabra')
+    indexer = FancyIndexTester([1, 0, 4, 3, 0, 2])
+    assert ''.join(set1[indexer]) == 'badcar'
+
+
+def test_pandas_compat():
+    set1 = OrderedSet('abracadabra')
+    assert set1.get_loc('b') == 1
+    assert set1.get_indexer(['b', 'r']) == [1, 2]
 
 
 def test_tuples():
     set1 = OrderedSet()
     tup = ('tuple', 1)
     set1.add(tup)
-    eq_(set1.index(tup), 0)
-    eq_(set1[0], tup)
+    assert set1.index(tup) == 0
+    assert set1[0] == tup
 
 
 def test_remove():
@@ -244,8 +264,9 @@ def check_results_(results, datas, name):
     data and name are used to indicate what sort of tests is run.
     """
     if not allsame_(results):
-        raise AssertionError('Not all same {} for {} with datas={}'.format(
-            results, name, datas))
+        raise AssertionError(
+            'Not all same {} for {} with datas={}'.format(results, name, datas)
+        )
     for a, b in it.combinations(results, 2):
         if not isinstance(a, (bool, int)):
             assert a is not b, name + ' should all be different items'
@@ -289,40 +310,38 @@ def test_operator_consistency_isect():
     for data1, data2 in _operator_consistency_testdata():
         result1 = data1.copy()
         result1.intersection_update(data2)
-        result2 = (data1 & data2)
-        result3 = (data1.intersection(data2))
-        check_results_([result1, result2, result3], datas=(data1, data2),
-                       name='isect')
+        result2 = data1 & data2
+        result3 = data1.intersection(data2)
+        check_results_([result1, result2, result3], datas=(data1, data2), name='isect')
 
 
 def test_operator_consistency_difference():
     for data1, data2 in _operator_consistency_testdata():
         result1 = data1.copy()
         result1.difference_update(data2)
-        result2 = (data1 - data2)
-        result3 = (data1.difference(data2))
-        check_results_([result1, result2, result3], datas=(data1, data2),
-                       name='difference')
+        result2 = data1 - data2
+        result3 = data1.difference(data2)
+        check_results_(
+            [result1, result2, result3], datas=(data1, data2), name='difference'
+        )
 
 
 def test_operator_consistency_xor():
     for data1, data2 in _operator_consistency_testdata():
         result1 = data1.copy()
         result1.symmetric_difference_update(data2)
-        result2 = (data1 ^ data2)
-        result3 = (data1.symmetric_difference(data2))
-        check_results_([result1, result2, result3], datas=(data1, data2),
-                       name='xor')
+        result2 = data1 ^ data2
+        result3 = data1.symmetric_difference(data2)
+        check_results_([result1, result2, result3], datas=(data1, data2), name='xor')
 
 
 def test_operator_consistency_union():
     for data1, data2 in _operator_consistency_testdata():
         result1 = data1.copy()
         result1.update(data2)
-        result2 = (data1 | data2)
-        result3 = (data1.union(data2))
-        check_results_([result1, result2, result3], datas=(data1, data2),
-                       name='union')
+        result2 = data1 | data2
+        result3 = data1.union(data2)
+        check_results_([result1, result2, result3], datas=(data1, data2), name='union')
 
 
 def test_operator_consistency_subset():
@@ -330,8 +349,7 @@ def test_operator_consistency_subset():
         result1 = data1 <= data2
         result2 = data1.issubset(data2)
         result3 = set(data1).issubset(set(data2))
-        check_results_([result1, result2, result3], datas=(data1, data2),
-                       name='subset')
+        check_results_([result1, result2, result3], datas=(data1, data2), name='subset')
 
 
 def test_operator_consistency_superset():
@@ -339,16 +357,16 @@ def test_operator_consistency_superset():
         result1 = data1 >= data2
         result2 = data1.issuperset(data2)
         result3 = set(data1).issuperset(set(data2))
-        check_results_([result1, result2, result3], datas=(data1, data2),
-                       name='superset')
+        check_results_(
+            [result1, result2, result3], datas=(data1, data2), name='superset'
+        )
 
 
 def test_operator_consistency_disjoint():
     for data1, data2 in _operator_consistency_testdata():
         result1 = data1.isdisjoint(data2)
         result2 = len(data1.intersection(data2)) == 0
-        check_results_([result1, result2], datas=(data1, data2),
-                       name='disjoint')
+        check_results_([result1, result2], datas=(data1, data2), name='disjoint')
 
 
 def test_bitwise_and_consistency():
@@ -358,7 +376,6 @@ def test_bitwise_and_consistency():
     result1 = data1.copy()
     result1.intersection_update(data2)
     # This requires a custom & operation apparently
-    result2 = (data1 & data2)
-    result3 = (data1.intersection(data2))
-    check_results_([result1, result2, result3], datas=(data1, data2),
-                   name='isect')
+    result2 = data1 & data2
+    result3 = data1.intersection(data2)
+    check_results_([result1, result2, result3], datas=(data1, data2), name='isect')

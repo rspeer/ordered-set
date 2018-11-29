@@ -52,19 +52,28 @@ operators like sets do.
     OrderedSet(['r', 'x', 's', 'h', 'z', 'm'])
 
 The `__getitem__()` and `index()` methods have been extended to accept any
-iterable except a string, to perform NumPy-like "fancy indexing".
+iterable except a string, returning a list, to perform NumPy-like "fancy
+indexing".
 
     >>> letters = OrderedSet('abracadabra')
 
     >>> letters[[0, 2, 3]]
-    OrderedSet(['a', 'r', 'c'])
+    ['a', 'r', 'c']
 
     >>> letters.index(['a', 'r', 'c'])
     [0, 2, 3]
 
+An OrderedSet can be used as a bi-directional mapping between a sparse
+vocabulary and dense index numbers.
+
 This combination of features makes OrderedSet a simple implementation of many
-of the things that `pandas.Index` is used for. An OrderedSet can be used as a
-bi-directional mapping between a sparse vocabulary and dense index numbers.
+of the things that `pandas.Index` is used for, and many of its operations are
+faster than the equivalent pandas operations.
+
+For further compatibility with pandas.Index, `get_loc` (the pandas method for
+looking up a single index) and `get_indexer` (the pandas method for fancy
+indexing in reverse) are both aliases for `index` (which handles both cases
+in OrderedSet).
 
 OrderedSet implements `__getstate__` and `__setstate__` so it can be pickled,
 and implements the abstract base classes `collections.MutableSet` and
