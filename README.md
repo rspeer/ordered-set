@@ -2,8 +2,10 @@
 [![Codecov](https://codecov.io/github/LuminosoInsight/ordered-set/badge.svg?branch=master&service=github)](https://codecov.io/github/LuminosoInsight/ordered-set?branch=master)
 [![Pypi](https://img.shields.io/pypi/v/ordered-set.svg)](https://pypi.python.org/pypi/ordered-set)
 
-An OrderedSet is a custom MutableSet that remembers its order, so that every
-entry has an index that can be looked up.
+An OrderedSet is a mutable data structure that is a hybrid of a list and a set.
+It remembers the order of its entries, and every entry has an index number that
+can be looked up.
+
 
 ## Usage examples
 
@@ -63,8 +65,16 @@ indexing".
     >>> letters.index(['a', 'r', 'c'])
     [0, 2, 3]
 
+OrderedSet implements `__getstate__` and `__setstate__` so it can be pickled,
+and implements the abstract base classes `collections.MutableSet` and
+`collections.Sequence`.
+
+
+## Interoperability with NumPy and Pandas
+
 An OrderedSet can be used as a bi-directional mapping between a sparse
-vocabulary and dense index numbers.
+vocabulary and dense index numbers. As of version 3.1, it accepts NumPy arrays
+of index numbers as well as lists.
 
 This combination of features makes OrderedSet a simple implementation of many
 of the things that `pandas.Index` is used for, and many of its operations are
@@ -74,10 +84,6 @@ For further compatibility with pandas.Index, `get_loc` (the pandas method for
 looking up a single index) and `get_indexer` (the pandas method for fancy
 indexing in reverse) are both aliases for `index` (which handles both cases
 in OrderedSet).
-
-OrderedSet implements `__getstate__` and `__setstate__` so it can be pickled,
-and implements the abstract base classes `collections.MutableSet` and
-`collections.Sequence`.
 
 
 ## Type hinting
@@ -109,9 +115,12 @@ content is a standard Python list instead of a doubly-linked list. This
 provides O(1) lookups by index at the expense of O(N) deletion, as well as
 slightly faster iteration.
 
-If you were to use a Python `dict` as an OrderedSet by ignoring its values, its
-lookups and deletions would be similar to Hettiger's implementation, with
-iteration speed similar to this implementation.
+In Python 3.6 and later, the built-in `dict` type is inherently ordered. If you
+ignore the dictionary values, that also gives you a simple ordered set, with
+fast O(1) insertion, deletion, iteration and membership testing. However, `dict`
+does not provide the list-like random access features of OrderedSet. You
+would have to convert it to a list in O(N) to look up the index of an entry or
+look up an entry by its index.
 
 
 ## Compatibility
