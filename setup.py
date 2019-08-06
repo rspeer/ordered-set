@@ -17,7 +17,7 @@ setup(
     package_data={'': ['MIT-LICENSE']},
     include_package_data=True,
     tests_require=['pytest'],
-    python_requires='>=2.7',
+    python_requires='>=2.7.8',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
