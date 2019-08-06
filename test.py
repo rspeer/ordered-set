@@ -45,7 +45,7 @@ def test_indexing():
     assert set1[:] is not set1
     assert set1.copy() is not set1
 
-    assert set1[[1, 2]] == OrderedSet(['b', 'r'])
+    assert set1[[1, 2]] == ['b', 'r']
     assert set1[1:3] == OrderedSet(['b', 'r'])
     assert set1.index('b') == 1
     assert set1.index(['b', 'r']) == [1, 2]
@@ -156,7 +156,8 @@ def test_pop():
 
     assert elem == 'a'
 
-    pytest.raises(KeyError, set1.pop)
+    with pytest.raises(KeyError):
+        set1.pop()
 
 
 def test_getitem_type_error():
@@ -180,30 +181,14 @@ def test_empty_repr():
 def test_eq_wrong_type():
     set1 = OrderedSet()
     assert set1 != 2
+    assert OrderedSet([1, 2]) != [1, 2]
+    assert OrderedSet([1, 2]) != (2, 1)
 
 
 def test_ordered_equality():
-    # Ordered set checks order against sequences.
+    # Ordered set checks order against other Ordered set.
     assert OrderedSet([1, 2]) == OrderedSet([1, 2])
-    assert OrderedSet([1, 2]) == [1, 2]
-    assert OrderedSet([1, 2]) == (1, 2)
-    assert OrderedSet([1, 2]) == collections.deque([1, 2])
-
-
-def test_ordered_inequality():
-    # Ordered set checks order against sequences.
     assert OrderedSet([1, 2]) != OrderedSet([2, 1])
-
-    assert OrderedSet([1, 2]) != [2, 1]
-    assert OrderedSet([1, 2]) != [2, 1, 1]
-
-    assert OrderedSet([1, 2]) != (2, 1)
-    assert OrderedSet([1, 2]) != (2, 1, 1)
-
-    # Note: in Python 2.7 deque does not inherit from Sequence, but __eq__
-    # contains an explicit check for this case for python 2/3 compatibility.
-    assert OrderedSet([1, 2]) != collections.deque([2, 1])
-    assert OrderedSet([1, 2]) != collections.deque([2, 2, 1])
 
 
 def test_comparisons():
@@ -219,21 +204,38 @@ def test_comparisons():
 def test_unordered_equality():
     # Unordered set checks order against non-sequences.
     assert OrderedSet([1, 2]) == {1, 2}
+    assert OrderedSet([1, 2]) == {2, 1}
     assert OrderedSet([1, 2]) == frozenset([2, 1])
+    assert OrderedSet([1, 2]) == frozenset([1, 2])
 
-    assert OrderedSet([1, 2]) == {1: 'a', 2: 'b'}
+
+@pytest.mark.skipif(sys.version_info >= (3,), reason="requires Python 2.x")
+@pytest.mark.xfail(sys.version_info < (2, 7, 8), reason="bug fixed in 2.7.8+")
+def test_dict_views_py2():
+    assert OrderedSet([1, 2]) == {1: 1, 2: 2}.viewkeys()
+    assert OrderedSet([(1, 1), (2, 2)]) == {1: 1, 2: 2}.viewitems()
+    assert OrderedSet([1, 2]) != {1: 1, 2: 2}.viewvalues()  # dict_values is not set-like
+    assert OrderedSet([1, 2]) == collections.OrderedDict([(1, 1), (2, 2)]).viewkeys()
+    assert OrderedSet([1, 2]) != collections.OrderedDict([(2, 2), (1, 1)]).viewkeys()
+
+
+@pytest.mark.skipif(sys.version_info < (3,), reason="requires Python 3.x")
+def test_dict_views_py3():
     assert OrderedSet([1, 2]) == {1: 1, 2: 2}.keys()
-    assert OrderedSet([1, 2]) == {1: 1, 2: 2}.values()
+    assert OrderedSet([(1, 1), (2, 2)]) == {1: 1, 2: 2}.items()
+    assert OrderedSet([1, 2]) != {1: 1, 2: 2}.values()  # dict_values is not set-like
+    assert OrderedSet([1, 2]) == collections.OrderedDict([(1, 1), (2, 2)]).keys()
+    assert OrderedSet([1, 2]) != collections.OrderedDict([(2, 2), (1, 1)]).keys()
 
-    # Corner case: OrderedDict is not a Sequence, so we don't check for order,
-    # even though it does have the concept of order.
-    assert OrderedSet([1, 2]) == collections.OrderedDict([(2, 2), (1, 1)])
 
-    # Corner case: We have to treat iterators as unordered because there
-    # is nothing to distinguish an ordered and unordered iterator
-    assert OrderedSet([1, 2]) == iter([1, 2])
-    assert OrderedSet([1, 2]) == iter([2, 1])
-    assert OrderedSet([1, 2]) == iter([2, 1, 1])
+@pytest.mark.xfail(sys.version_info < (2, 7, 8), reason="bug fixed in 2.7.8+")
+def test_unordered_equality_reflected():
+    # Expected failure on old versions of 2.7
+    # See https://bugs.python.org/issue8743
+    assert {1, 2} == OrderedSet([1, 2])
+    assert {2, 1} == OrderedSet([1, 2])
+    assert frozenset([2, 1]) == OrderedSet([1, 2])
+    assert frozenset([1, 2]) == OrderedSet([1, 2])
 
 
 def test_unordered_inequality():
@@ -243,10 +245,6 @@ def test_unordered_inequality():
     assert OrderedSet([1, 2]) != {2: 'b'}
     assert OrderedSet([1, 2]) != {1: 1, 4: 2}.keys()
     assert OrderedSet([1, 2]) != {1: 1, 2: 3}.values()
-
-    # Corner case: OrderedDict is not a Sequence, so we don't check for order,
-    # even though it does have the concept of order.
-    assert OrderedSet([1, 2]) != collections.OrderedDict([(2, 2), (3, 1)])
 
 
 def allsame_(iterable, eq=operator.eq):
