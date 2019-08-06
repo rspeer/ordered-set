@@ -2,21 +2,31 @@
 An OrderedSet is a custom MutableSet that remembers its order, so that every
 entry has an index that can be looked up.
 
-Based on a recipe originally posted to ActiveState Recipes by Raymond Hettiger,
+Based on a recipe originally posted to ActiveState by Raymond Hettinger,
 and released under the MIT license.
+
+http://code.activestate.com/recipes/576694-orderedset/
 """
 import itertools as it
-from collections import deque
+from collections import OrderedDict
 
 try:
     # Python 3
     from collections.abc import MutableSet, Sequence
+    dict_keys_view = type({}.keys())
+    dict_items_view = type({}.items())
+    odict_keys_view = type(OrderedDict().keys())
+    odict_items_view = type(OrderedDict().items())
 except ImportError:
     # Python 2.7
     from collections import MutableSet, Sequence
+    dict_keys_view = type({}.viewkeys())
+    dict_items_view = type({}.viewitems())
+    odict_keys_view = type(OrderedDict().viewkeys())
+    odict_items_view = type(OrderedDict().viewitems())
 
 SLICE_ALL = slice(None)
-__version__ = "3.1"
+__version__ = "4.0"
 
 
 def is_iterable(obj):
@@ -279,33 +289,24 @@ class OrderedSet(MutableSet, Sequence):
 
     def __eq__(self, other):
         """
-        Returns true if the containers have the same items. If `other` is a
-        Sequence, then order is checked, otherwise it is ignored.
+        Returns true if the sets have the same members. If `other` is an
+        ordered set, then the same ordering is also checked, otherwise the
+        comparison is order agnostic.
 
         Example:
             >>> oset = OrderedSet([1, 3, 2])
-            >>> oset == [1, 3, 2]
-            True
-            >>> oset == [1, 2, 3]
-            False
-            >>> oset == [2, 3]
-            False
             >>> oset == OrderedSet([3, 2, 1])
             False
+            >>> oset == {3, 2, 1}
+            True
         """
-        # In Python 2 deque is not a Sequence, so treat it as one for
-        # consistent behavior with Python 3.
-        if isinstance(other, (Sequence, deque)):
+        if isinstance(other, (OrderedSet, odict_keys_view, odict_items_view)):
             # Check that this OrderedSet contains the same elements, in the
             # same order, as the other object.
             return list(self) == list(other)
-        try:
-            other_as_set = set(other)
-        except TypeError:
-            # If `other` can't be converted into a set, it's not equal.
-            return False
-        else:
-            return set(self) == other_as_set
+        if isinstance(other, (set, frozenset, dict_keys_view, dict_items_view)):
+            return set(self) == other
+        return NotImplemented
 
     def union(self, *sets):
         """
