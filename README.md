@@ -125,5 +125,4 @@ look up an entry by its index.
 
 ## Compatibility
 
-OrderedSet is automatically tested on Python 2.7, 3.4, 3.5, 3.6, and 3.7.
-We've checked more informally that it works on PyPy and PyPy3.
+OrderedSet is automatically tested on Python 2.7, 3.5, 3.6, 3.7, PyPy 7.0, and PyPy3 7.0.

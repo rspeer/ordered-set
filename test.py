@@ -186,8 +186,13 @@ def test_ordered_equality():
     # Ordered set checks order against sequences.
     assert OrderedSet([1, 2]) == OrderedSet([1, 2])
     assert OrderedSet([1, 2]) == [1, 2]
+    assert [1, 2] == OrderedSet([1, 2])
     assert OrderedSet([1, 2]) == (1, 2)
+    assert (1, 2) == OrderedSet([1, 2])
     assert OrderedSet([1, 2]) == collections.deque([1, 2])
+    assert collections.deque([1, 2]) == OrderedSet([1, 2])
+    assert OrderedSet([1, 2]) == collections.OrderedDict([(1, 1), (2, 2)])
+    assert collections.OrderedDict([(1, 1), (2, 2)]) == OrderedSet([1, 2])
 
 
 def test_ordered_inequality():
@@ -216,37 +221,16 @@ def test_comparisons():
         assert OrderedSet([1, 2]) > {1}
 
 
-def test_unordered_equality():
+def test_unordered_inequality():
     # Unordered set checks order against non-sequences.
-    assert OrderedSet([1, 2]) == {1, 2}
-    assert OrderedSet([1, 2]) == frozenset([2, 1])
-
-    assert OrderedSet([1, 2]) == {1: 'a', 2: 'b'}
-    assert OrderedSet([1, 2]) == {1: 1, 2: 2}.keys()
-    assert OrderedSet([1, 2]) == {1: 1, 2: 2}.values()
-
-    # Corner case: OrderedDict is not a Sequence, so we don't check for order,
-    # even though it does have the concept of order.
-    assert OrderedSet([1, 2]) == collections.OrderedDict([(2, 2), (1, 1)])
+    assert OrderedSet([1, 2]) != {1, 2}
+    assert {1, 2} != OrderedSet([1, 2])
+    assert OrderedSet([1, 2]) != collections.OrderedDict([(2, 2), (1, 1)])
+    assert {} != OrderedSet([])
 
     # Corner case: We have to treat iterators as unordered because there
     # is nothing to distinguish an ordered and unordered iterator
-    assert OrderedSet([1, 2]) == iter([1, 2])
-    assert OrderedSet([1, 2]) == iter([2, 1])
-    assert OrderedSet([1, 2]) == iter([2, 1, 1])
-
-
-def test_unordered_inequality():
-    assert OrderedSet([1, 2]) != set([])
-    assert OrderedSet([1, 2]) != frozenset([2, 1, 3])
-
-    assert OrderedSet([1, 2]) != {2: 'b'}
-    assert OrderedSet([1, 2]) != {1: 1, 4: 2}.keys()
-    assert OrderedSet([1, 2]) != {1: 1, 2: 3}.values()
-
-    # Corner case: OrderedDict is not a Sequence, so we don't check for order,
-    # even though it does have the concept of order.
-    assert OrderedSet([1, 2]) != collections.OrderedDict([(2, 2), (3, 1)])
+    assert OrderedSet([1, 2]) != iter([1, 2])
 
 
 def allsame_(iterable, eq=operator.eq):

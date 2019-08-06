@@ -6,7 +6,7 @@ Based on a recipe originally posted to ActiveState Recipes by Raymond Hettiger,
 and released under the MIT license.
 """
 import itertools as it
-from collections import deque
+from collections import deque, OrderedDict
 
 try:
     # Python 3
@@ -14,6 +14,7 @@ try:
 except ImportError:
     # Python 2.7
     from collections import MutableSet, Sequence
+
 
 SLICE_ALL = slice(None)
 __version__ = "3.1"
@@ -279,12 +280,16 @@ class OrderedSet(MutableSet, Sequence):
 
     def __eq__(self, other):
         """
-        Returns true if the containers have the same items. If `other` is a
-        Sequence, then order is checked, otherwise it is ignored.
+        Returns true if the containers have the same items in the same order.
+
+        If `other` is a set with no order, or a different type, this will
+        return False.
 
         Example:
             >>> oset = OrderedSet([1, 3, 2])
             >>> oset == [1, 3, 2]
+            True
+            >>> [1, 3, 2] == oset
             True
             >>> oset == [1, 2, 3]
             False
@@ -292,20 +297,19 @@ class OrderedSet(MutableSet, Sequence):
             False
             >>> oset == OrderedSet([3, 2, 1])
             False
+            >>> oset == {1, 3, 2}
+            False
         """
         # In Python 2 deque is not a Sequence, so treat it as one for
-        # consistent behavior with Python 3.
-        if isinstance(other, (Sequence, deque)):
+        # consistent behavior with Python 3. OrderedDict doesn't count as
+        # a sequence either, but it seems useful to compare for equality
+        # with OrderedSet.
+        if isinstance(other, (Sequence, OrderedDict, deque)):
             # Check that this OrderedSet contains the same elements, in the
             # same order, as the other object.
             return list(self) == list(other)
-        try:
-            other_as_set = set(other)
-        except TypeError:
-            # If `other` can't be converted into a set, it's not equal.
-            return False
         else:
-            return set(self) == other_as_set
+            return False
 
     def union(self, *sets):
         """
