@@ -1,2 +1,3 @@
 include MIT-LICENSE
 include test.py
+include pytest.ini
