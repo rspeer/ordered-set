@@ -87,10 +87,30 @@ in OrderedSet).
 
 
 ## Type hinting
-To use type hinting features install `ordered-set-stubs` package from
-[PyPI](https://pypi.org/project/ordered-set-stubs/):
 
-    $ pip install ordered-set-stubs
+OrderedSet works with generics, similar to other collection types like `typing.Set` and `typing.List`:
+
+    from ordered_set import OrderedSet
+
+
+    def receives_int(ordered_set: "OrderedSet[int]") -> "OrderedSet[int]"
+      return ordered_set
+
+
+    receives_int(OrderedSet(["ololo"]))
+
+In Python 3.7+, you can use `from __future__ import annotations` to drop the quotes:
+
+    from __future__ import annotations
+
+    from ordered_set import OrderedSet
+
+
+    def receives_int(ordered_set: OrderedSet[int]) -> OrderedSet[int]
+      return ordered_set
+
+
+    receives_int(OrderedSet(["ololo"]))
 
 
 ## Authors

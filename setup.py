@@ -13,8 +13,8 @@ setup(
     description="A MutableSet that remembers its order, so that every entry has an index.",
     long_description=DESCRIPTION,
     long_description_content_type='text/markdown',
-    py_modules=['ordered_set'],
-    package_data={'': ['MIT-LICENSE']},
+    packages=[''],  # i.e., the root package
+    package_data={'': ['MIT-LICENSE', 'py.typed']},
     include_package_data=True,
     tests_require=['pytest'],
     python_requires='>=2.7',
