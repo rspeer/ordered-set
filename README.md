@@ -6,7 +6,6 @@ An OrderedSet is a mutable data structure that is a hybrid of a list and a set.
 It remembers the order of its entries, and every entry has an index number that
 can be looked up.
 
-
 ## Usage examples
 
 An OrderedSet is created and used like a set:
@@ -69,8 +68,12 @@ OrderedSet implements `__getstate__` and `__setstate__` so it can be pickled,
 and implements the abstract base classes `collections.MutableSet` and
 `collections.Sequence`.
 
+OrderedSet can be used as a generic type, like those in the Python `typing`
+module. You can define variables and arguments as, for example,
+`OrderedSet[str]`, the same way you would use `Sequence[str]` or `Set[str]`.
 
-## Interoperability with NumPy and Pandas
+
+## OrderedSet in data science applications
 
 An OrderedSet can be used as a bi-directional mapping between a sparse
 vocabulary and dense index numbers. As of version 3.1, it accepts NumPy arrays
@@ -84,33 +87,6 @@ For further compatibility with pandas.Index, `get_loc` (the pandas method for
 looking up a single index) and `get_indexer` (the pandas method for fancy
 indexing in reverse) are both aliases for `index` (which handles both cases
 in OrderedSet).
-
-
-## Type hinting
-
-OrderedSet works with generics, similar to other collection types like `typing.Set` and `typing.List`:
-
-    from ordered_set import OrderedSet
-
-
-    def receives_int(ordered_set: "OrderedSet[int]") -> "OrderedSet[int]"
-      return ordered_set
-
-
-    receives_int(OrderedSet(["ololo"]))
-
-In Python 3.7+, you can use `from __future__ import annotations` to drop the quotes:
-
-    from __future__ import annotations
-
-    from ordered_set import OrderedSet
-
-
-    def receives_int(ordered_set: OrderedSet[int]) -> OrderedSet[int]
-      return ordered_set
-
-
-    receives_int(OrderedSet(["ololo"]))
 
 
 ## Authors
@@ -145,5 +121,5 @@ look up an entry by its index.
 
 ## Compatibility
 
-OrderedSet is automatically tested on Python 2.7, 3.4, 3.5, 3.6, and 3.7.
-We've checked more informally that it works on PyPy and PyPy3.
+OrderedSet is automatically tested on Python 3.5, 3.6, and 3.7. We've checked
+more informally that it works on PyPy and PyPy3.
