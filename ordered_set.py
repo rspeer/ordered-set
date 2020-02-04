@@ -6,14 +6,26 @@ Based on a recipe originally posted to ActiveState Recipes by Raymond Hettiger,
 and released under the MIT license.
 """
 import itertools as it
-from typing import Any, MutableSet, Type, TypeVar, Sequence, Union, List, Iterator, Dict, Set, Iterable, overload
-
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    MutableSet,
+    Sequence,
+    Set,
+    Type,
+    TypeVar,
+    Union,
+    overload,
+)
 
 SLICE_ALL = slice(None)
 __version__ = "4.0"
 
 
-T = TypeVar('T')
+T = TypeVar("T")
 SetLike = Union[Sequence[T], Set[T]]
 
 
@@ -43,7 +55,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         OrderedSet([1, 2, 3])
     """
 
-    def __init__(self, iterable: Union[Iterable[T], Set[T]]=None):
+    def __init__(self, iterable: Union[Iterable[T], Set[T]] = None):
         self.items = []  # type: List[T]
         self.map = {}  # type: Dict[T, int]
         if iterable is not None:
@@ -66,7 +78,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         ...
 
     @overload
-    def __getitem__(self, index: slice) -> 'OrderedSet[T]':
+    def __getitem__(self, index: slice) -> "OrderedSet[T]":
         ...
 
     def __getitem__(self, index: int) -> T:
@@ -91,7 +103,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             return self.copy()
         elif isinstance(index, Iterable):
             return [self.items[i] for i in index]
-        elif isinstance(index, slice) or hasattr(index, '__index__'):
+        elif isinstance(index, slice) or hasattr(index, "__index__"):
             result = self.items[index]
             if isinstance(result, list):
                 return self.__class__(result)
@@ -314,7 +326,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         else:
             return set(self) == other_as_set
 
-    def union(self, *sets: SetLike[T]) -> 'OrderedSet[T]':
+    def union(self, *sets: SetLike[T]) -> "OrderedSet[T]":
         """
         Combines all unique items.
         Each items order is defined by its first appearance.
@@ -333,11 +345,11 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         items = it.chain.from_iterable(containers)
         return cls(items)
 
-    def __and__(self, other: SetLike[T]) -> 'OrderedSet[T]':
+    def __and__(self, other: SetLike[T]) -> "OrderedSet[T]":
         # the parent implementation of this is backwards
         return self.intersection(other)
 
-    def intersection(self, *sets: SetLike[T]) -> 'OrderedSet[T]':
+    def intersection(self, *sets: SetLike[T]) -> "OrderedSet[T]":
         """
         Returns elements in common between all sets. Order is defined only
         by the first set.
@@ -359,7 +371,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             items = self
         return cls(items)
 
-    def difference(self, *sets: SetLike[T]) -> 'OrderedSet[T]':
+    def difference(self, *sets: SetLike[T]) -> "OrderedSet[T]":
         """
         Returns all elements that are in this set but not the others.
 
@@ -413,7 +425,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             return False
         return all(item in self for item in other)
 
-    def symmetric_difference(self, other: SetLike[T]) -> 'OrderedSet[T]':
+    def symmetric_difference(self, other: SetLike[T]) -> "OrderedSet[T]":
         """
         Return the symmetric difference of two OrderedSets as a new set.
         That is, the new set will contain all elements that are in exactly
@@ -456,7 +468,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> print(this)
             OrderedSet([3, 5])
         """
-        items_to_remove =set()  # type: Set[T]
+        items_to_remove = set()  # type: Set[T]
         for other in sets:
             items_as_set = set(other)  # type: Set[T]
             items_to_remove |= items_as_set
