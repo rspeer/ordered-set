@@ -117,9 +117,3 @@ fast O(1) insertion, deletion, iteration and membership testing. However, `dict`
 does not provide the list-like random access features of OrderedSet. You
 would have to convert it to a list in O(N) to look up the index of an entry or
 look up an entry by its index.
-
-
-## Compatibility
-
-OrderedSet is automatically tested on Python 3.5, 3.6, and 3.7. We've checked
-more informally that it works on PyPy and PyPy3.
