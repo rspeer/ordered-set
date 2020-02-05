@@ -16,7 +16,6 @@ from typing import (
     Optional,
     Sequence,
     Set,
-    Type,
     TypeVar,
     Union,
     overload,
