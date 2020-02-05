@@ -13,6 +13,7 @@ from typing import (
     Iterator,
     List,
     MutableSet,
+    Optional,
     Sequence,
     Set,
     Type,
@@ -29,14 +30,17 @@ T = TypeVar("T")
 SetLike = Union[Sequence[T], Set[T]]
 
 
-def is_atomic(obj: Any) -> bool:
+def _is_atomic(obj: Any) -> bool:
     """
+    Returns True for objects which are iterable but should not be iterated in
+    the context of indexing an OrderedSet.
+
     When we index by an iterable, usually that means we're being asked to look
     up a list of things.
 
     However, in the case of the .index() method, we shouldn't handle strings
-    and tuples like other iterables. They're not sequences of things to look up,
-    they're the single, atomic thing we're trying to find.
+    and tuples like other iterables. They're not sequences of things to look
+    up, they're the single, atomic thing we're trying to find.
 
     As an example, oset.index('hello') should give the index of 'hello' in an
     OrderedSet of strings. It shouldn't give the indexes of each individual
@@ -55,7 +59,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         OrderedSet([1, 2, 3])
     """
 
-    def __init__(self, iterable: Union[Iterable[T], Set[T]] = None):
+    def __init__(self, iterable: Optional[Iterable[T]] = None):
         self.items = []  # type: List[T]
         self.map = {}  # type: Dict[T, int]
         if iterable is not None:
@@ -147,7 +151,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         else:
             self.__init__(state)
 
-    def __contains__(self, key: object) -> bool:
+    def __contains__(self, key: Any) -> bool:
         """
         Test if the item is in this ordered set.
 
@@ -219,7 +223,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> oset.index(2)
             1
         """
-        if isinstance(key, Iterable) and not is_atomic(key):
+        if isinstance(key, Iterable) and not _is_atomic(key):
             return [self.index(subkey) for subkey in key]
         return self.map[key]
 

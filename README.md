@@ -68,9 +68,10 @@ OrderedSet implements `__getstate__` and `__setstate__` so it can be pickled,
 and implements the abstract base classes `collections.MutableSet` and
 `collections.Sequence`.
 
-OrderedSet can be used as a generic type, like those in the Python `typing`
-module. You can define variables and arguments as, for example,
-`OrderedSet[str]`, the same way you would use `Sequence[str]` or `Set[str]`.
+OrderedSet can be used as a generic collection type, similar to the collections
+in the `typing` module like List, Dict, and Set. For example, you can annotate
+a variable as having the type `OrderedSet[str]` or `OrderedSet[Tuple[int,
+str]]`.
 
 
 ## OrderedSet in data science applications
@@ -92,7 +93,8 @@ in OrderedSet).
 ## Authors
 
 OrderedSet was implemented by Robyn Speer. Jon Crall contributed changes and
-tests to make it fit the Python set API.
+tests to make it fit the Python set API. Roman Inflianskas added the original
+type annotations.
 
 
 ## Comparisons
