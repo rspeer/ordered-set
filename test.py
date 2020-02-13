@@ -1,10 +1,12 @@
-import pickle
-import pytest
 import collections
-import sys
-import operator
 import itertools as it
+import operator
+import pickle
 import random
+import sys
+
+import pytest
+
 from ordered_set import OrderedSet
 
 
@@ -58,6 +60,7 @@ class FancyIndexTester:
     Make sure we can index by a NumPy ndarray, without having to import
     NumPy.
     """
+
     def __init__(self, indices):
         self.indices = indices
 

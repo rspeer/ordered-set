@@ -6,7 +6,6 @@ An OrderedSet is a mutable data structure that is a hybrid of a list and a set.
 It remembers the order of its entries, and every entry has an index number that
 can be looked up.
 
-
 ## Usage examples
 
 An OrderedSet is created and used like a set:
@@ -69,8 +68,13 @@ OrderedSet implements `__getstate__` and `__setstate__` so it can be pickled,
 and implements the abstract base classes `collections.MutableSet` and
 `collections.Sequence`.
 
+OrderedSet can be used as a generic collection type, similar to the collections
+in the `typing` module like List, Dict, and Set. For example, you can annotate
+a variable as having the type `OrderedSet[str]` or `OrderedSet[Tuple[int,
+str]]`.
 
-## Interoperability with NumPy and Pandas
+
+## OrderedSet in data science applications
 
 An OrderedSet can be used as a bi-directional mapping between a sparse
 vocabulary and dense index numbers. As of version 3.1, it accepts NumPy arrays
@@ -86,37 +90,11 @@ indexing in reverse) are both aliases for `index` (which handles both cases
 in OrderedSet).
 
 
-## Type hinting
-
-OrderedSet works with generics, similar to other collection types like `typing.Set` and `typing.List`:
-
-    from ordered_set import OrderedSet
-
-
-    def receives_int(ordered_set: "OrderedSet[int]") -> "OrderedSet[int]"
-      return ordered_set
-
-
-    receives_int(OrderedSet(["ololo"]))
-
-In Python 3.7+, you can use `from __future__ import annotations` to drop the quotes:
-
-    from __future__ import annotations
-
-    from ordered_set import OrderedSet
-
-
-    def receives_int(ordered_set: OrderedSet[int]) -> OrderedSet[int]
-      return ordered_set
-
-
-    receives_int(OrderedSet(["ololo"]))
-
-
 ## Authors
 
 OrderedSet was implemented by Robyn Speer. Jon Crall contributed changes and
-tests to make it fit the Python set API.
+tests to make it fit the Python set API. Roman Inflianskas added the original
+type annotations.
 
 
 ## Comparisons
@@ -141,9 +119,3 @@ fast O(1) insertion, deletion, iteration and membership testing. However, `dict`
 does not provide the list-like random access features of OrderedSet. You
 would have to convert it to a list in O(N) to look up the index of an entry or
 look up an entry by its index.
-
-
-## Compatibility
-
-OrderedSet is automatically tested on Python 2.7, 3.4, 3.5, 3.6, and 3.7.
-We've checked more informally that it works on PyPy and PyPy3.
