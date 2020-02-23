@@ -7,6 +7,7 @@ and released under the MIT license.
 """
 import itertools as it
 from typing import (
+    AbstractSet,
     Any,
     Dict,
     Iterable,
@@ -16,6 +17,7 @@ from typing import (
     Optional,
     Sequence,
     Set,
+    Tuple,
     TypeVar,
     Union,
     overload,
@@ -335,7 +337,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         Each items order is defined by its first appearance.
 
         Example:
-            >>> oset = OrderedSet.union(OrderedSet([3, 1, 4, 1, 5]), [1, 3], [2, 0])
+            >>> oset = OrderedSet([3, 1, 4, 1, 5]).union([1, 3], [2, 0])
             >>> print(oset)
             OrderedSet([3, 1, 4, 5, 2, 0])
             >>> oset.union([8, 9])
@@ -343,7 +345,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> oset | {10}
             OrderedSet([3, 1, 4, 5, 2, 0, 10])
         """
-        cls = self.__class__ if isinstance(self, OrderedSet) else OrderedSet
+        cls = self.__class__
         containers = map(list, it.chain([self], sets))
         items = it.chain.from_iterable(containers)
         return cls(items)
@@ -358,7 +360,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         by the first set.
 
         Example:
-            >>> oset = OrderedSet.intersection(OrderedSet([0, 1, 2, 3]), [1, 2, 3])
+            >>> oset = OrderedSet([0, 1, 2, 3]).intersection([1, 2, 3])
             >>> print(oset)
             OrderedSet([1, 2, 3])
             >>> oset.intersection([2, 4, 5], [1, 2, 3, 4])
@@ -366,35 +368,31 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> oset.intersection()
             OrderedSet([1, 2, 3])
         """
-        cls = self.__class__ if isinstance(self, OrderedSet) else OrderedSet
-        if sets:
-            common = set.intersection(*map(set, sets))
-            items = (item for item in self if item in common)
-        else:
-            items = self
-        return cls(items)
+        cls = self.__class__
+        if not sets:
+            return cls(self)
+        common = set.intersection(*map(set, sets))
+        return cls(item for item in self if item in common)
 
     def difference(self, *sets: SetLike[T]) -> "OrderedSet[T]":
         """
         Returns all elements that are in this set but not the others.
 
         Example:
-            >>> OrderedSet([1, 2, 3]).difference(OrderedSet([2]))
+            >>> OrderedSet([1, 2, 3]).difference([2])
             OrderedSet([1, 3])
-            >>> OrderedSet([1, 2, 3]).difference(OrderedSet([2]), OrderedSet([3]))
+            >>> OrderedSet([1, 2, 3]).difference([2], [3])
             OrderedSet([1])
-            >>> OrderedSet([1, 2, 3]) - OrderedSet([2])
+            >>> OrderedSet([1, 2, 3]) - [2]
             OrderedSet([1, 3])
             >>> OrderedSet([1, 2, 3]).difference()
             OrderedSet([1, 2, 3])
         """
         cls = self.__class__
-        if sets:
-            other = set.union(*map(set, sets))
-            items = (item for item in self if item not in other)
-        else:
-            items = self
-        return cls(items)
+        if not sets:
+            return cls(self)
+        other = set.union(*map(set, sets))
+        return cls(item for item in self if item not in other)
 
     def issubset(self, other: SetLike[T]) -> bool:
         """
@@ -509,3 +507,285 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         self._update_items(
             [item for item in self.items if item not in items_to_remove] + items_to_add
         )
+
+
+class FrozenOrderedSet(AbstractSet[T], Sequence[T]):
+    """
+    A FrozenOrderedSet is a custom AbstractSet that remembers its order, so that
+    every entry has an index that can be looked up.
+
+    Example:
+        >>> FrozenOrderedSet([1, 1, 2, 3, 2])
+        FrozenOrderedSet([1, 2, 3])
+    """
+
+    def __init__(self, iterable: Optional[Iterable[T]] = None):
+        self.items = tuple(OrderedSet(iterable))  # type: Tuple[T, ...]
+        self.map = {v: i for i, v in enumerate(self.items)}  # type: Dict[T, int]
+
+    def __len__(self):
+        """
+        Returns the number of unique elements in the ordered set.
+
+        Example:
+            >>> len(FrozenOrderedSet([]))
+            0
+            >>> len(FrozenOrderedSet([1, 2]))
+            2
+        """
+        return len(self.items)
+
+    @overload
+    def __getitem__(self, index: Sequence[int]) -> List[T]:
+        ...
+
+    @overload
+    def __getitem__(self, index: slice) -> "FrozenOrderedSet[T]":
+        ...
+
+    def __getitem__(self, index: int) -> T:
+        """
+        Get the item at a given index.
+
+        If `index` is a slice, you will get back that slice of items, as a
+        new OrderedSet.
+
+        If `index` is a list or a similar iterable, you'll get a list of
+        items corresponding to those indices. This is similar to NumPy's
+        "fancy indexing". The result is not an OrderedSet because you may ask
+        for duplicate indices, and the number of elements returned should be
+        the number of elements asked for.
+
+        Example:
+            >>> fo_set = FrozenOrderedSet([1, 2, 3])
+            >>> fo_set[1]
+            2
+        """
+        if isinstance(index, slice) and index == SLICE_ALL:
+            return self.copy()
+        if isinstance(index, Iterable):
+            return [self.items[i] for i in index]
+        if isinstance(index, slice) or hasattr(index, "__index__"):
+            result = self.items[index]
+            if isinstance(result, list):
+                return self.__class__(result)
+            return result
+        raise TypeError("Don't know how to index an OrderedSet by %r" % index)
+
+    def copy(self) -> "FrozenOrderedSet[T]":
+        """
+        Return a shallow copy of this object.
+
+        Example:
+            >>> this = FrozenOrderedSet([1, 2, 3])
+            >>> other = this.copy()
+            >>> this == other
+            True
+            >>> this is other
+            False
+        """
+        return self.__class__(self)
+
+    def __contains__(self, key: Any) -> bool:
+        """
+        Test if the item is in this ordered set.
+
+        Example:
+            >>> 1 in FrozenOrderedSet([1, 3, 2])
+            True
+            >>> 5 in FrozenOrderedSet([1, 3, 2])
+            False
+        """
+        return key in self.map
+
+    @overload
+    def index(self, key: T) -> int:
+        ...
+
+    def index(self, key: Sequence[T]) -> List[int]:
+        """
+        Get the index of a given entry, raising an IndexError if it's not
+        present.
+
+        `key` can be an iterable of entries that is not a string, in which case
+        this returns a list of indices.
+
+        Example:
+            >>> fo_set = FrozenOrderedSet([1, 2, 3])
+            >>> fo_set.index(2)
+            1
+        """
+        if isinstance(key, Iterable) and not _is_atomic(key):
+            return [self.index(subkey) for subkey in key]
+        return self.map[key]
+
+    # Provide some compatibility with pd.Index
+    get_loc = index
+    get_indexer = index
+
+    def __iter__(self) -> Iterator[T]:
+        """
+        Example:
+            >>> list(iter(FrozenOrderedSet([1, 2, 3])))
+            [1, 2, 3]
+        """
+        return iter(self.items)
+
+    def __reversed__(self) -> Iterator[T]:
+        """
+        Example:
+            >>> list(reversed(FrozenOrderedSet([1, 2, 3])))
+            [3, 2, 1]
+        """
+        return reversed(self.items)
+
+    def __repr__(self) -> str:
+        if not self:
+            return "%s()" % (self.__class__.__name__,)
+        return "%s(%r)" % (self.__class__.__name__, list(self))
+
+    def __eq__(self, other: Any) -> bool:
+        """
+        Returns true if the containers have the same items. If `other` is a
+        Sequence, then order is checked, otherwise it is ignored.
+
+        Example:
+            >>> fo_set = FrozenOrderedSet([1, 3, 2])
+            >>> fo_set == [1, 3, 2]
+            True
+            >>> fo_set == [1, 2, 3]
+            False
+            >>> fo_set == [2, 3]
+            False
+            >>> fo_set == FrozenOrderedSet([3, 2, 1])
+            False
+        """
+        if isinstance(other, Sequence):
+            # Check that this OrderedSet contains the same elements, in the
+            # same order, as the other object.
+            return list(self) == list(other)
+        try:
+            other_as_set = set(other)
+        except TypeError:
+            # If `other` can't be converted into a set, it's not equal.
+            return False
+        else:
+            return set(self) == other_as_set
+
+    def __hash__(self) -> int:
+        return hash(self.items)
+
+    def union(self, *sets: SetLike[T]) -> "FrozenOrderedSet[T]":
+        """
+        Combines all unique items.
+        Each items order is defined by its first appearance.
+
+        Example:
+            >>> fo_set = FrozenOrderedSet([3, 1, 4, 1, 5]).union([1, 3], [2, 0])
+            >>> print(fo_set)
+            FrozenOrderedSet([3, 1, 4, 5, 2, 0])
+            >>> fo_set.union([8, 9])
+            FrozenOrderedSet([3, 1, 4, 5, 2, 0, 8, 9])
+            >>> fo_set | {10}
+            FrozenOrderedSet([3, 1, 4, 5, 2, 0, 10])
+        """
+        cls = self.__class__
+        containers = map(list, it.chain([self], sets))
+        items = it.chain.from_iterable(containers)
+        return cls(items)
+
+    def __and__(self, other: SetLike[T]) -> "FrozenOrderedSet[T]":
+        # the parent implementation of this is backwards
+        return self.intersection(other)
+
+    def intersection(self, *sets: SetLike[T]) -> "FrozenOrderedSet[T]":
+        """
+        Returns elements in common between all sets. Order is defined only
+        by the first set.
+
+        Example:
+            >>> fo_set = FrozenOrderedSet([0, 1, 2, 3]).intersection([1, 2, 3])
+            >>> print(fo_set)
+            FrozenOrderedSet([1, 2, 3])
+            >>> fo_set.intersection([2, 4, 5], [1, 2, 3, 4])
+            FrozenOrderedSet([2])
+            >>> fo_set.intersection()
+            FrozenOrderedSet([1, 2, 3])
+        """
+        cls = self.__class__
+        if not sets:
+            return cls(self)
+        common = set.intersection(*map(set, sets))
+        return cls(item for item in self if item in common)
+
+    def difference(self, *sets: SetLike[T]) -> "FrozenOrderedSet[T]":
+        """
+        Returns all elements that are in this set but not the others.
+
+        Example:
+            >>> FrozenOrderedSet([1, 2, 3]).difference([2])
+            FrozenOrderedSet([1, 3])
+            >>> FrozenOrderedSet([1, 2, 3]).difference([2], [3])
+            FrozenOrderedSet([1])
+            >>> FrozenOrderedSet([1, 2, 3]) - [2]
+            FrozenOrderedSet([1, 3])
+            >>> FrozenOrderedSet([1, 2, 3]).difference()
+            FrozenOrderedSet([1, 2, 3])
+        """
+        cls = self.__class__
+        if not sets:
+            return cls(self)
+        other = set.union(*map(set, sets))
+        return cls(item for item in self if item not in other)
+
+    def issubset(self, other: SetLike[T]) -> bool:
+        """
+        Report whether another set contains this set.
+
+        Example:
+            >>> FrozenOrderedSet([1, 2, 3]).issubset({1, 2})
+            False
+            >>> FrozenOrderedSet([1, 2, 3]).issubset({1, 2, 3, 4})
+            True
+            >>> FrozenOrderedSet([1, 2, 3]).issubset({1, 4, 3, 5})
+            False
+        """
+        if len(self) > len(other):  # Fast check for obvious cases
+            return False
+        return all(item in other for item in self)
+
+    def issuperset(self, other: SetLike[T]) -> bool:
+        """
+        Report whether this set contains another set.
+
+        Example:
+            >>> FrozenOrderedSet([1, 2]).issuperset([1, 2, 3])
+            False
+            >>> FrozenOrderedSet([1, 2, 3, 4]).issuperset({1, 2, 3})
+            True
+            >>> FrozenOrderedSet([1, 4, 3, 5]).issuperset({1, 2, 3})
+            False
+        """
+        if len(self) < len(other):  # Fast check for obvious cases
+            return False
+        return all(item in self for item in other)
+
+    def symmetric_difference(self, other: SetLike[T]) -> "FrozenOrderedSet[T]":
+        """
+        Return the symmetric difference of two FrozenOrderedSets as a new set.
+        That is, the new set will contain all elements that are in exactly
+        one of the sets.
+
+        Their order will be preserved, with elements from `self` preceding
+        elements from `other`.
+
+        Example:
+            >>> this = FrozenOrderedSet([1, 4, 3, 5, 7])
+            >>> other = FrozenOrderedSet([9, 7, 1, 3, 2])
+            >>> this.symmetric_difference(other)
+            FrozenOrderedSet([4, 5, 9, 2])
+        """
+        cls = self.__class__
+        diff1 = cls(self).difference(other)
+        diff2 = cls(other).difference(self)
+        return diff1.union(diff2)

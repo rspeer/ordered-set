@@ -7,48 +7,53 @@ import sys
 
 import pytest
 
-from ordered_set import OrderedSet
+from ordered_set import FrozenOrderedSet, OrderedSet
 
 
-def test_pickle():
-    set1 = OrderedSet('abracadabra')
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_pickle(cls):
+    set1 = cls('abracadabra')
     roundtrip = pickle.loads(pickle.dumps(set1))
     assert roundtrip == set1
 
 
-def test_empty_pickle():
-    empty_oset = OrderedSet()
-    empty_roundtrip = pickle.loads(pickle.dumps(empty_oset))
-    assert empty_roundtrip == empty_oset
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_empty_pickle(cls):
+    empty_set = cls()
+    empty_roundtrip = pickle.loads(pickle.dumps(empty_set))
+    assert empty_roundtrip == empty_set
 
 
-def test_order():
-    set1 = OrderedSet('abracadabra')
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_order(cls):
+    set1 = cls('abracadabra')
     assert len(set1) == 5
-    assert set1 == OrderedSet(['a', 'b', 'r', 'c', 'd'])
+    assert set1 == cls(['a', 'b', 'r', 'c', 'd'])
     assert list(reversed(set1)) == ['d', 'c', 'r', 'b', 'a']
 
 
-def test_binary_operations():
-    set1 = OrderedSet('abracadabra')
-    set2 = OrderedSet('simsalabim')
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_binary_operations(cls):
+    set1 = cls('abracadabra')
+    set2 = cls('simsalabim')
     assert set1 != set2
 
-    assert set1 & set2 == OrderedSet(['a', 'b'])
-    assert set1 | set2 == OrderedSet(['a', 'b', 'r', 'c', 'd', 's', 'i', 'm', 'l'])
-    assert set1 - set2 == OrderedSet(['r', 'c', 'd'])
+    assert set1 & set2 == cls(['a', 'b'])
+    assert set1 | set2 == cls(['a', 'b', 'r', 'c', 'd', 's', 'i', 'm', 'l'])
+    assert set1 - set2 == cls(['r', 'c', 'd'])
 
 
-def test_indexing():
-    set1 = OrderedSet('abracadabra')
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_indexing(cls):
+    set1 = cls('abracadabra')
     assert set1[:] == set1
     assert set1.copy() == set1
     assert set1 is set1
     assert set1[:] is not set1
     assert set1.copy() is not set1
 
-    assert set1[[1, 2]] == OrderedSet(['b', 'r'])
-    assert set1[1:3] == OrderedSet(['b', 'r'])
+    assert set1[[1, 2]] == cls(['b', 'r'])
+    assert set1[1:3] == cls(['b', 'r'])
     assert set1.index('b') == 1
     assert set1.index(['b', 'r']) == [1, 2]
     with pytest.raises(KeyError):
@@ -75,22 +80,24 @@ class FancyIndexTester:
         raise TypeError
 
 
-def test_fancy_index_class():
-    set1 = OrderedSet('abracadabra')
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_fancy_index_class(cls):
+    set1 = cls('abracadabra')
     indexer = FancyIndexTester([1, 0, 4, 3, 0, 2])
     assert ''.join(set1[indexer]) == 'badcar'
 
 
-def test_pandas_compat():
-    set1 = OrderedSet('abracadabra')
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_pandas_compat(cls):
+    set1 = cls('abracadabra')
     assert set1.get_loc('b') == 1
     assert set1.get_indexer(['b', 'r']) == [1, 2]
 
 
-def test_tuples():
-    set1 = OrderedSet()
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_tuples(cls):
     tup = ('tuple', 1)
-    set1.add(tup)
+    set1 = OrderedSet([tup])
     assert set1.index(tup) == 0
     assert set1[0] == tup
 
@@ -162,8 +169,9 @@ def test_pop():
     pytest.raises(KeyError, set1.pop)
 
 
-def test_getitem_type_error():
-    set1 = OrderedSet('ab')
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_getitem_type_error(cls):
+    set1 = cls('ab')
     with pytest.raises(TypeError):
         set1['a']
 
@@ -175,81 +183,98 @@ def test_update_value_error():
         set1.update(3)
 
 
-def test_empty_repr():
-    set1 = OrderedSet()
-    assert repr(set1) == 'OrderedSet()'
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_empty_repr(cls):
+    set1 = cls()
+    assert repr(set1) == '{}()'.format(cls.__name__)
 
 
-def test_eq_wrong_type():
-    set1 = OrderedSet()
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_eq_wrong_type(cls):
+    set1 = cls()
     assert set1 != 2
 
 
-def test_ordered_equality():
+def test_frozen_is_hashable():
+    set1 = FrozenOrderedSet("abcabc")
+    assert hash(set1) == hash(set1.copy())
+    assert hash(set1) == hash(("a", "b", "c"))
+
+    set2 = FrozenOrderedSet("abcd")
+    assert hash(set1) != hash(set2)
+    assert hash(set1) != hash(("a", "b", "c", "d"))
+
+
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_ordered_equality(cls):
     # Ordered set checks order against sequences.
-    assert OrderedSet([1, 2]) == OrderedSet([1, 2])
-    assert OrderedSet([1, 2]) == [1, 2]
-    assert OrderedSet([1, 2]) == (1, 2)
-    assert OrderedSet([1, 2]) == collections.deque([1, 2])
+    assert cls([1, 2]) == cls([1, 2])
+    assert cls([1, 2]) == [1, 2]
+    assert cls([1, 2]) == (1, 2)
+    assert cls([1, 2]) == collections.deque([1, 2])
 
 
-def test_ordered_inequality():
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_ordered_inequality(cls):
     # Ordered set checks order against sequences.
-    assert OrderedSet([1, 2]) != OrderedSet([2, 1])
+    assert cls([1, 2]) != cls([2, 1])
 
-    assert OrderedSet([1, 2]) != [2, 1]
-    assert OrderedSet([1, 2]) != [2, 1, 1]
+    assert cls([1, 2]) != [2, 1]
+    assert cls([1, 2]) != [2, 1, 1]
 
-    assert OrderedSet([1, 2]) != (2, 1)
-    assert OrderedSet([1, 2]) != (2, 1, 1)
+    assert cls([1, 2]) != (2, 1)
+    assert cls([1, 2]) != (2, 1, 1)
 
     # Note: in Python 2.7 deque does not inherit from Sequence, but __eq__
     # contains an explicit check for this case for python 2/3 compatibility.
-    assert OrderedSet([1, 2]) != collections.deque([2, 1])
-    assert OrderedSet([1, 2]) != collections.deque([2, 2, 1])
+    assert cls([1, 2]) != collections.deque([2, 1])
+    assert cls([1, 2]) != collections.deque([2, 2, 1])
 
 
-def test_comparisons():
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_comparisons(cls):
     # Comparison operators on sets actually test for subset and superset.
-    assert OrderedSet([1, 2]) < OrderedSet([1, 2, 3])
-    assert OrderedSet([1, 2]) > OrderedSet([1])
+    assert cls([1, 2]) < cls([1, 2, 3])
+    assert cls([1, 2]) > cls([1])
 
     # MutableSet subclasses aren't comparable to set on 3.3.
     if tuple(sys.version_info) >= (3, 4):
-        assert OrderedSet([1, 2]) > {1}
+        assert cls([1, 2]) > {1}
 
 
-def test_unordered_equality():
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_unordered_equality(cls):
     # Unordered set checks order against non-sequences.
-    assert OrderedSet([1, 2]) == {1, 2}
-    assert OrderedSet([1, 2]) == frozenset([2, 1])
+    assert cls([1, 2]) == {1, 2}
+    assert cls([1, 2]) == frozenset([2, 1])
 
-    assert OrderedSet([1, 2]) == {1: 'a', 2: 'b'}
-    assert OrderedSet([1, 2]) == {1: 1, 2: 2}.keys()
-    assert OrderedSet([1, 2]) == {1: 1, 2: 2}.values()
+    assert cls([1, 2]) == {1: 'a', 2: 'b'}
+    assert cls([1, 2]) == {1: 1, 2: 2}.keys()
+    assert cls([1, 2]) == {1: 1, 2: 2}.values()
 
     # Corner case: OrderedDict is not a Sequence, so we don't check for order,
     # even though it does have the concept of order.
-    assert OrderedSet([1, 2]) == collections.OrderedDict([(2, 2), (1, 1)])
+    assert cls([1, 2]) == collections.OrderedDict([(2, 2), (1, 1)])
 
     # Corner case: We have to treat iterators as unordered because there
     # is nothing to distinguish an ordered and unordered iterator
-    assert OrderedSet([1, 2]) == iter([1, 2])
-    assert OrderedSet([1, 2]) == iter([2, 1])
-    assert OrderedSet([1, 2]) == iter([2, 1, 1])
+    assert cls([1, 2]) == iter([1, 2])
+    assert cls([1, 2]) == iter([2, 1])
+    assert cls([1, 2]) == iter([2, 1, 1])
 
 
-def test_unordered_inequality():
-    assert OrderedSet([1, 2]) != set([])
-    assert OrderedSet([1, 2]) != frozenset([2, 1, 3])
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_unordered_inequality(cls):
+    assert cls([1, 2]) != set([])
+    assert cls([1, 2]) != frozenset([2, 1, 3])
 
-    assert OrderedSet([1, 2]) != {2: 'b'}
-    assert OrderedSet([1, 2]) != {1: 1, 4: 2}.keys()
-    assert OrderedSet([1, 2]) != {1: 1, 2: 3}.values()
+    assert cls([1, 2]) != {2: 'b'}
+    assert cls([1, 2]) != {1: 1, 4: 2}.keys()
+    assert cls([1, 2]) != {1: 1, 2: 3}.values()
 
     # Corner case: OrderedDict is not a Sequence, so we don't check for order,
     # even though it does have the concept of order.
-    assert OrderedSet([1, 2]) != collections.OrderedDict([(2, 2), (3, 1)])
+    assert cls([1, 2]) != collections.OrderedDict([(2, 2), (3, 1)])
 
 
 def allsame_(iterable, eq=operator.eq):
@@ -278,88 +303,96 @@ def check_results_(results, datas, name):
             assert a is not b, name + ' should all be different items'
 
 
-def _operator_consistency_testdata():
+def _operator_consistency_testdata(cls):
     """
     Predefined and random data used to test operator consistency.
     """
     # test case 1
-    data1 = OrderedSet([5, 3, 1, 4])
-    data2 = OrderedSet([1, 4])
+    data1 = cls([5, 3, 1, 4])
+    data2 = cls([1, 4])
     yield data1, data2
 
     # first set is empty
-    data1 = OrderedSet([])
-    data2 = OrderedSet([3, 1, 2])
+    data1 = cls([])
+    data2 = cls([3, 1, 2])
     yield data1, data2
 
     # second set is empty
-    data1 = OrderedSet([3, 1, 2])
-    data2 = OrderedSet([])
+    data1 = cls([3, 1, 2])
+    data2 = cls([])
     yield data1, data2
 
     # both sets are empty
-    data1 = OrderedSet([])
-    data2 = OrderedSet([])
+    data1 = cls([])
+    data2 = cls([])
     yield data1, data2
 
     # random test cases
     rng = random.Random(0)
     a, b = 20, 20
     for _ in range(10):
-        data1 = OrderedSet(rng.randint(0, a) for _ in range(b))
-        data2 = OrderedSet(rng.randint(0, a) for _ in range(b))
+        data1 = cls(rng.randint(0, a) for _ in range(b))
+        data2 = cls(rng.randint(0, a) for _ in range(b))
         yield data1, data2
         yield data2, data1
 
 
-def test_operator_consistency_isect():
-    for data1, data2 in _operator_consistency_testdata():
-        result1 = data1.copy()
-        result1.intersection_update(data2)
-        result2 = data1 & data2
-        result3 = data1.intersection(data2)
-        check_results_([result1, result2, result3], datas=(data1, data2), name='isect')
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_operator_consistency_isect(cls):
+    for data1, data2 in _operator_consistency_testdata(cls):
+        results = [data1 & data2, data1.intersection(data2)]
+        if cls == OrderedSet:
+            mutation_result = data1.copy()
+            mutation_result.intersection_update(data2)
+            results.append(mutation_result)
+        check_results_(results, datas=(data1, data2), name='isect')
 
 
-def test_operator_consistency_difference():
-    for data1, data2 in _operator_consistency_testdata():
-        result1 = data1.copy()
-        result1.difference_update(data2)
-        result2 = data1 - data2
-        result3 = data1.difference(data2)
-        check_results_(
-            [result1, result2, result3], datas=(data1, data2), name='difference'
-        )
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_operator_consistency_difference(cls):
+    for data1, data2 in _operator_consistency_testdata(cls):
+        results = [data1 - data2, data1.difference(data2)]
+        if cls == OrderedSet:
+            mutation_result = data1.copy()
+            mutation_result.difference_update(data2)
+            results.append(mutation_result)
+        check_results_(results, datas=(data1, data2), name='difference')
 
 
-def test_operator_consistency_xor():
-    for data1, data2 in _operator_consistency_testdata():
-        result1 = data1.copy()
-        result1.symmetric_difference_update(data2)
-        result2 = data1 ^ data2
-        result3 = data1.symmetric_difference(data2)
-        check_results_([result1, result2, result3], datas=(data1, data2), name='xor')
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_operator_consistency_xor(cls):
+    for data1, data2 in _operator_consistency_testdata(cls):
+        results = [data1 ^ data2, data1.symmetric_difference(data2)]
+        if cls == OrderedSet:
+            mutation_result = data1.copy()
+            mutation_result.symmetric_difference_update(data2)
+            results.append(mutation_result)
+        check_results_(results, datas=(data1, data2), name='xor')
 
 
-def test_operator_consistency_union():
-    for data1, data2 in _operator_consistency_testdata():
-        result1 = data1.copy()
-        result1.update(data2)
-        result2 = data1 | data2
-        result3 = data1.union(data2)
-        check_results_([result1, result2, result3], datas=(data1, data2), name='union')
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_operator_consistency_union(cls):
+    for data1, data2 in _operator_consistency_testdata(cls):
+        results = [data1 | data2, data1.union(data2)]
+        if cls == OrderedSet:
+            mutation_result = data1.copy()
+            mutation_result.update(data2)
+            results.append(mutation_result)
+        check_results_(results, datas=(data1, data2), name='union')
 
 
-def test_operator_consistency_subset():
-    for data1, data2 in _operator_consistency_testdata():
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_operator_consistency_subset(cls):
+    for data1, data2 in _operator_consistency_testdata(cls):
         result1 = data1 <= data2
         result2 = data1.issubset(data2)
         result3 = set(data1).issubset(set(data2))
         check_results_([result1, result2, result3], datas=(data1, data2), name='subset')
 
 
-def test_operator_consistency_superset():
-    for data1, data2 in _operator_consistency_testdata():
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_operator_consistency_superset(cls):
+    for data1, data2 in _operator_consistency_testdata(cls):
         result1 = data1 >= data2
         result2 = data1.issuperset(data2)
         result3 = set(data1).issuperset(set(data2))
@@ -368,20 +401,23 @@ def test_operator_consistency_superset():
         )
 
 
-def test_operator_consistency_disjoint():
-    for data1, data2 in _operator_consistency_testdata():
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_operator_consistency_disjoint(cls):
+    for data1, data2 in _operator_consistency_testdata(cls):
         result1 = data1.isdisjoint(data2)
         result2 = len(data1.intersection(data2)) == 0
         check_results_([result1, result2], datas=(data1, data2), name='disjoint')
 
 
-def test_bitwise_and_consistency():
+@pytest.mark.parametrize("cls", [OrderedSet, FrozenOrderedSet])
+def test_bitwise_and_consistency(cls):
     # Specific case that was failing without explicit __and__ definition
-    data1 = OrderedSet([12, 13, 1, 8, 16, 15, 9, 11, 18, 6, 4, 3, 19, 17])
-    data2 = OrderedSet([19, 4, 9, 3, 2, 10, 15, 17, 11, 13, 20, 6, 14, 16, 8])
-    result1 = data1.copy()
-    result1.intersection_update(data2)
+    data1 = cls([12, 13, 1, 8, 16, 15, 9, 11, 18, 6, 4, 3, 19, 17])
+    data2 = cls([19, 4, 9, 3, 2, 10, 15, 17, 11, 13, 20, 6, 14, 16, 8])
     # This requires a custom & operation apparently
-    result2 = data1 & data2
-    result3 = data1.intersection(data2)
-    check_results_([result1, result2, result3], datas=(data1, data2), name='isect')
+    results = [data1 & data2, data1.intersection(data2)]
+    if cls == OrderedSet:
+        mutation_result = data1.copy()
+        mutation_result.intersection_update(data2)
+        results.append(mutation_result)
+    check_results_([results], datas=(data1, data2), name='isect')
