@@ -22,7 +22,7 @@ from typing import (
 )
 
 SLICE_ALL = slice(None)
-__version__ = "4.0"
+__version__ = "4.0.1"
 
 
 T = TypeVar("T")
