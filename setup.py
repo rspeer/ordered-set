@@ -4,17 +4,17 @@ DESCRIPTION = open('README.md').read()
 
 setup(
     name="ordered-set",
-    version='4.0',
+    version='4.0.1',
     maintainer='Robyn Speer',
     maintainer_email='rspeer@luminoso.com',
     license="MIT-LICENSE",
     url='https://github.com/LuminosoInsight/ordered-set',
     platforms=["any"],
-    description="A MutableSet that remembers its order, so that every entry has an index.",
+    description="A set that remembers its order, and allows looking up its items by their index in that order.",
     long_description=DESCRIPTION,
     long_description_content_type='text/markdown',
-    packages=[''],  # i.e., the root package
-    package_data={'': ['MIT-LICENSE', 'py.typed']},
+    py_modules=['ordered_set'],
+    package_data={'': ['MIT-LICENSE']},
     include_package_data=True,
     tests_require=['pytest'],
     python_requires='>=3.5',
