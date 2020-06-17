@@ -4,7 +4,7 @@ DESCRIPTION = open('README.md').read()
 
 setup(
     name="ordered-set",
-    version='4.0.1',
+    version='4.0.2',
     maintainer='Robyn Speer',
     maintainer_email='rspeer@luminoso.com',
     license="MIT-LICENSE",
