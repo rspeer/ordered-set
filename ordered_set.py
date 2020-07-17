@@ -80,15 +80,15 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         """
         return len(self.items)
 
-    @overload
-    def __getitem__(self, index: Sequence[int]) -> List[T]:
-        ...
+    # @overload
+    # def __getitem__(self, index: Sequence[int]) -> List[T]:
+    #     ...
 
-    @overload
-    def __getitem__(self, index: slice) -> "OrderedSet[T]":
-        ...
+    # @overload
+    # def __getitem__(self, index: slice) -> "OrderedSet[T]":
+    #     ...
 
-    def __getitem__(self, index: int) -> T:
+    def __getitem__(self, index: int): # -> T:
         """
         Get the item at a given index.
 
@@ -209,11 +209,11 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             )
         return item_index
 
-    @overload
-    def index(self, key: T) -> int:
-        ...
+    # @overload
+    # def index(self, key: T) -> int:
+    #     ...
 
-    def index(self, key: Sequence[T]) -> List[int]:
+    def index(self, key: Sequence[T]): # -> List[int]:
         """
         Get the index of a given entry, raising an IndexError if it's not
         present.
