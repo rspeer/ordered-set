@@ -62,7 +62,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         OrderedSet([1, 2, 3])
     """
 
-    def __init__(self, iterable: Optional[Iterable[T]] = None) -> None:
+    def __init__(self, iterable: Optional[Iterable[T]] = None):
         self.items = []  # type: List[T]
         self.map = {}  # type: Dict[T, int]
         if iterable is not None:
@@ -88,11 +88,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
     def __getitem__(self, index: slice) -> "OrderedSet[T]":
         ...
 
-    @overload
     def __getitem__(self, index: int) -> T:
-        ...
-
-    def __getitem__(self, index):
         """
         Get the item at a given index.
 
@@ -217,11 +213,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
     def index(self, key: T) -> int:
         ...
 
-    @overload
     def index(self, key: Sequence[T]) -> List[int]:
-        ...
-
-    def index(self, key):
         """
         Get the index of a given entry, raising an IndexError if it's not
         present.
