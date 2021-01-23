@@ -66,7 +66,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         self.items = []  # type: List[T]
         self.map = {}  # type: Dict[T, int]
         if iterable is not None:
-            self |= iterable  # type: ignore
+            self |= iterable
 
     def __len__(self):
         """
@@ -80,7 +80,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         """
         return len(self.items)
 
-    @overload  # type: ignore
+    @overload
     def __getitem__(self, index: Sequence[int]) -> List[T]:
         ...
 
@@ -170,7 +170,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         """
         return key in self.map
 
-    def add(self, key: T) -> int:  # type: ignore
+    def add(self, key: T) -> int:
         """
         Add `key` as an item to this OrderedSet, then return its index.
 
@@ -213,8 +213,8 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             )
         return item_index
 
-    @overload  # type: ignore
-    def index(self, key: T) -> int:  # type: ignore
+    @overload
+    def index(self, key: T) -> int:
         ...
 
     @overload
@@ -358,9 +358,9 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         cls = self.__class__ if isinstance(self, OrderedSet) else OrderedSet
         containers = map(list, it.chain([self], sets))
         items = it.chain.from_iterable(containers)
-        return cls(items)  # type: ignore
+        return cls(items)
 
-    def __and__(self, other: Union[Sequence[T], Set[T]]) -> "OrderedSet[T]":  # type: ignore
+    def __and__(self, other: Union[Sequence[T], Set[T]]) -> "OrderedSet[T]":
         # the parent implementation of this is backwards
         return self.intersection(other)
 
@@ -383,8 +383,8 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             common = set.intersection(*map(set, sets))
             items = (item for item in self if item in common)
         else:
-            items = self  # type: ignore
-        return cls(items)  # type: ignore
+            items = self
+        return cls(items)
 
     def difference(self, *sets: Union[Sequence[T], Set[T]]) -> "OrderedSet[T]":
         """
@@ -405,7 +405,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             other = set.union(*map(set, sets))
             items = (item for item in self if item not in other)
         else:
-            items = self  # type: ignore
+            items = self
         return cls(items)
 
     def issubset(self, other: Union[Sequence[T], Set[T]]) -> bool:
@@ -456,8 +456,8 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             OrderedSet([4, 5, 9, 2])
         """
         cls = self.__class__ if isinstance(self, OrderedSet) else OrderedSet
-        diff1 = cls(self).difference(other)  # type: ignore
-        diff2 = cls(other).difference(self)  # type: ignore
+        diff1 = cls(self).difference(other)
+        diff2 = cls(other).difference(self)
         return diff1.union(diff2)
 
     def _update_items(self, items: list) -> None:
