@@ -14,8 +14,10 @@ setup(
     long_description=DESCRIPTION,
     long_description_content_type='text/markdown',
     packages=['ordered_set'],
-    package_data={'': ['MIT-LICENSE'], 'ordered_set': ['py.typed']},
-    include_package_data=True,
+    package_data={
+        '': ['MIT-LICENSE'],
+        'ordered_set': ['py.typed']
+    },
     tests_require=['pytest'],
     python_requires='>=3.5',
     classifiers=[
