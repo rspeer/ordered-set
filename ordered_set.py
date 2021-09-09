@@ -234,11 +234,12 @@ class OrderedSet(MutableSet[T], Sequence[T]):
     get_loc = index
     get_indexer = index
 
-    def pop(self) -> T:
+    def pop(self, index=-1) -> T:
         """
-        Remove and return the last element from the set.
+        Remove and return item at index (default last).
 
         Raises KeyError if the set is empty.
+        Raises IndexError if index is out of range.
 
         Example:
             >>> oset = OrderedSet([1, 2, 3])
@@ -248,8 +249,8 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         if not self.items:
             raise KeyError("Set is empty")
 
-        elem = self.items[-1]
-        del self.items[-1]
+        elem = self.items[index]
+        del self.items[index]
         del self.map[elem]
         return elem
 
