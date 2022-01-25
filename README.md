@@ -4,6 +4,20 @@ An OrderedSet is a mutable data structure that is a hybrid of a list and a set.
 It remembers the order of its entries, and every entry has an index number that
 can be looked up.
 
+## Installation
+
+`ordered_set` is available on PyPI and packaged as a wheel. You can list it
+as a dependency of your project, in whatever form that takes.
+
+To install it into your current Python environment:
+
+    pip install ordered-set
+
+To install the code for development, after checking out the repository:
+
+    pip install flit
+    flit install
+
 ## Usage examples
 
 An OrderedSet is created and used like a set:
