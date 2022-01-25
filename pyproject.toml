@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "ordered-set"
+version = "4.1"
+description = "A set that remembers its order, and allows looking up its items by their index in that order."
+authors = ["Elia Robyn Lake <elial@ec.ai>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
+poetry2setup = "^1.0.0"
+black = "^21.12b0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+max-line-length = 100
