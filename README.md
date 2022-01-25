@@ -104,9 +104,9 @@ in OrderedSet).
 
 ## Authors
 
-OrderedSet was implemented by Robyn Speer. Jon Crall contributed changes and
-tests to make it fit the Python set API. Roman Inflianskas added the original
-type annotations.
+OrderedSet was implemented by Elia Robyn Lake (maiden name: Robyn Speer).
+Jon Crall contributed changes and tests to make it fit the Python set API.
+Roman Inflianskas added the original type annotations.
 
 
 ## Comparisons
