@@ -1,32 +1,21 @@
-[tool.poetry]
-name = "ordered-set"
-version = "4.1"
-description = "A set that remembers its order, and allows looking up its items by their index in that order."
-authors = ["Elia Robyn Lake <elial@ec.ai>"]
-license = "MIT"
-
-packages = [
-    { include = "ordered_set" },
-
-    # additional files to include for the sake of standalone packages
-    { include = "test", format = "sdist" },
-    { include = "README.md", format = "sdist" },
-    { include = "MIT-LICENSE", format = "sdist" },
-    { include = "pytest.ini", format = "sdist" }
-]
-
-[tool.poetry.dependencies]
-python = "^3.7"
-
-[tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
-black = "^21.12b0"
-mypy = "^0.931"
-ipython = "^7"
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
 
-[tool.black]
-max-line-length = 100
+[project]
+name = "ordered-set"
+authors = [{name = "Elia Robyn Lake", email = "gh@arborelia.net"}]
+readme = "README.md"
+license = {file = "MIT-LICENSE"}
+classifiers = ["License :: OSI Approved :: MIT License"]
+dynamic = ["version", "description"]
+requires-python = ">=3.7"
+
+[tool.flit.module]
+name = "ordered_set"
+
+[project.urls]
+Home = "https://github.com/rspeer/ordered-set"
+
+[project.optional-dependencies]
+dev = ["pytest", "black", "mypy"]

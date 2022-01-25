@@ -451,9 +451,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             return False
         return all(item in self for item in other)
 
-    def symmetric_difference(
-        self, other: SetLike[T]
-    ) -> "OrderedSet[T]":
+    def symmetric_difference(self, other: SetLike[T]) -> "OrderedSet[T]":
         """
         Return the symmetric difference of two OrderedSets as a new set.
         That is, the new set will contain all elements that are in exactly
