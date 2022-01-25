@@ -5,6 +5,16 @@ description = "A set that remembers its order, and allows looking up its items b
 authors = ["Elia Robyn Lake <elial@ec.ai>"]
 license = "MIT"
 
+packages = [
+    { include = "ordered_set" },
+
+    # additional files to include for the sake of standalone packages
+    { include = "test", format = "sdist" },
+    { include = "README.md", format = "sdist" },
+    { include = "MIT-LICENSE", format = "sdist" },
+    { include = "pytest.ini", format = "sdist" }
+]
+
 [tool.poetry.dependencies]
 python = "^3.7"
 
