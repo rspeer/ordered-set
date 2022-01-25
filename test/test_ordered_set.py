@@ -11,7 +11,7 @@ from ordered_set import OrderedSet
 
 
 def test_pickle():
-    set1 = OrderedSet('abracadabra')
+    set1 = OrderedSet("abracadabra")
     roundtrip = pickle.loads(pickle.dumps(set1))
     assert roundtrip == set1
 
@@ -23,36 +23,36 @@ def test_empty_pickle():
 
 
 def test_order():
-    set1 = OrderedSet('abracadabra')
+    set1 = OrderedSet("abracadabra")
     assert len(set1) == 5
-    assert set1 == OrderedSet(['a', 'b', 'r', 'c', 'd'])
-    assert list(reversed(set1)) == ['d', 'c', 'r', 'b', 'a']
+    assert set1 == OrderedSet(["a", "b", "r", "c", "d"])
+    assert list(reversed(set1)) == ["d", "c", "r", "b", "a"]
 
 
 def test_binary_operations():
-    set1 = OrderedSet('abracadabra')
-    set2 = OrderedSet('simsalabim')
+    set1 = OrderedSet("abracadabra")
+    set2 = OrderedSet("simsalabim")
     assert set1 != set2
 
-    assert set1 & set2 == OrderedSet(['a', 'b'])
-    assert set1 | set2 == OrderedSet(['a', 'b', 'r', 'c', 'd', 's', 'i', 'm', 'l'])
-    assert set1 - set2 == OrderedSet(['r', 'c', 'd'])
+    assert set1 & set2 == OrderedSet(["a", "b"])
+    assert set1 | set2 == OrderedSet(["a", "b", "r", "c", "d", "s", "i", "m", "l"])
+    assert set1 - set2 == OrderedSet(["r", "c", "d"])
 
 
 def test_indexing():
-    set1 = OrderedSet('abracadabra')
+    set1 = OrderedSet("abracadabra")
     assert set1[:] == set1
     assert set1.copy() == set1
     assert set1 is set1
     assert set1[:] is not set1
     assert set1.copy() is not set1
 
-    assert set1[[1, 2]] == OrderedSet(['b', 'r'])
-    assert set1[1:3] == OrderedSet(['b', 'r'])
-    assert set1.index('b') == 1
-    assert set1.index(['b', 'r']) == [1, 2]
+    assert set1[[1, 2]] == OrderedSet(["b", "r"])
+    assert set1[1:3] == OrderedSet(["b", "r"])
+    assert set1.index("b") == 1
+    assert set1.index(["b", "r"]) == [1, 2]
     with pytest.raises(KeyError):
-        set1.index('br')
+        set1.index("br")
 
 
 class FancyIndexTester:
@@ -76,59 +76,59 @@ class FancyIndexTester:
 
 
 def test_fancy_index_class():
-    set1 = OrderedSet('abracadabra')
+    set1 = OrderedSet("abracadabra")
     indexer = FancyIndexTester([1, 0, 4, 3, 0, 2])
-    assert ''.join(set1[indexer]) == 'badcar'
+    assert "".join(set1[indexer]) == "badcar"
 
 
 def test_pandas_compat():
-    set1 = OrderedSet('abracadabra')
-    assert set1.get_loc('b') == 1
-    assert set1.get_indexer(['b', 'r']) == [1, 2]
+    set1 = OrderedSet("abracadabra")
+    assert set1.get_loc("b") == 1
+    assert set1.get_indexer(["b", "r"]) == [1, 2]
 
 
 def test_tuples():
     set1 = OrderedSet()
-    tup = ('tuple', 1)
+    tup = ("tuple", 1)
     set1.add(tup)
     assert set1.index(tup) == 0
     assert set1[0] == tup
 
 
 def test_remove():
-    set1 = OrderedSet('abracadabra')
+    set1 = OrderedSet("abracadabra")
 
-    set1.remove('a')
-    set1.remove('b')
+    set1.remove("a")
+    set1.remove("b")
 
-    assert set1 == OrderedSet('rcd')
-    assert set1[0] == 'r'
-    assert set1[1] == 'c'
-    assert set1[2] == 'd'
+    assert set1 == OrderedSet("rcd")
+    assert set1[0] == "r"
+    assert set1[1] == "c"
+    assert set1[2] == "d"
 
-    assert set1.index('r') == 0
-    assert set1.index('c') == 1
-    assert set1.index('d') == 2
+    assert set1.index("r") == 0
+    assert set1.index("c") == 1
+    assert set1.index("d") == 2
 
-    assert 'a' not in set1
-    assert 'b' not in set1
-    assert 'r' in set1
+    assert "a" not in set1
+    assert "b" not in set1
+    assert "r" in set1
 
     # Make sure we can .discard() something that's already gone, plus
     # something that was never there
-    set1.discard('a')
-    set1.discard('a')
+    set1.discard("a")
+    set1.discard("a")
 
 
 def test_remove_error():
     # If we .remove() an element that's not there, we get a KeyError
-    set1 = OrderedSet('abracadabra')
+    set1 = OrderedSet("abracadabra")
     with pytest.raises(KeyError):
-        set1.remove('z')
+        set1.remove("z")
 
 
 def test_clear():
-    set1 = OrderedSet('abracadabra')
+    set1 = OrderedSet("abracadabra")
     set1.clear()
 
     assert len(set1) == 0
@@ -136,40 +136,40 @@ def test_clear():
 
 
 def test_update():
-    set1 = OrderedSet('abcd')
-    result = set1.update('efgh')
+    set1 = OrderedSet("abcd")
+    result = set1.update("efgh")
 
     assert result == 7
     assert len(set1) == 8
-    assert ''.join(set1) == 'abcdefgh'
+    assert "".join(set1) == "abcdefgh"
 
-    set2 = OrderedSet('abcd')
-    result = set2.update('cdef')
+    set2 = OrderedSet("abcd")
+    result = set2.update("cdef")
     assert result == 5
     assert len(set2) == 6
-    assert ''.join(set2) == 'abcdef'
+    assert "".join(set2) == "abcdef"
 
 
 def test_pop():
-    set1 = OrderedSet('ab')
+    set1 = OrderedSet("ab")
     elem = set1.pop()
 
-    assert elem == 'b'
+    assert elem == "b"
     elem = set1.pop()
 
-    assert elem == 'a'
+    assert elem == "a"
 
     pytest.raises(KeyError, set1.pop)
 
 
 def test_getitem_type_error():
-    set1 = OrderedSet('ab')
+    set1 = OrderedSet("ab")
     with pytest.raises(TypeError):
-        set1['a']
+        set1["a"]
 
 
 def test_update_value_error():
-    set1 = OrderedSet('ab')
+    set1 = OrderedSet("ab")
     with pytest.raises(ValueError):
         # noinspection PyTypeChecker
         set1.update(3)
@@ -177,7 +177,7 @@ def test_update_value_error():
 
 def test_empty_repr():
     set1 = OrderedSet()
-    assert repr(set1) == 'OrderedSet()'
+    assert repr(set1) == "OrderedSet()"
 
 
 def test_eq_wrong_type():
@@ -224,7 +224,7 @@ def test_unordered_equality():
     assert OrderedSet([1, 2]) == {1, 2}
     assert OrderedSet([1, 2]) == frozenset([2, 1])
 
-    assert OrderedSet([1, 2]) == {1: 'a', 2: 'b'}
+    assert OrderedSet([1, 2]) == {1: "a", 2: "b"}
     assert OrderedSet([1, 2]) == {1: 1, 2: 2}.keys()
     assert OrderedSet([1, 2]) == {1: 1, 2: 2}.values()
 
@@ -243,7 +243,7 @@ def test_unordered_inequality():
     assert OrderedSet([1, 2]) != set([])
     assert OrderedSet([1, 2]) != frozenset([2, 1, 3])
 
-    assert OrderedSet([1, 2]) != {2: 'b'}
+    assert OrderedSet([1, 2]) != {2: "b"}
     assert OrderedSet([1, 2]) != {1: 1, 4: 2}.keys()
     assert OrderedSet([1, 2]) != {1: 1, 2: 3}.values()
 
@@ -253,7 +253,7 @@ def test_unordered_inequality():
 
 
 def allsame_(iterable, eq=operator.eq):
-    """ returns True of all items in iterable equal each other """
+    """returns True of all items in iterable equal each other"""
     iter_ = iter(iterable)
     try:
         first = next(iter_)
@@ -271,11 +271,11 @@ def check_results_(results, datas, name):
     """
     if not allsame_(results):
         raise AssertionError(
-            'Not all same {} for {} with datas={}'.format(results, name, datas)
+            "Not all same {} for {} with datas={}".format(results, name, datas)
         )
     for a, b in it.combinations(results, 2):
         if not isinstance(a, (bool, int)):
-            assert a is not b, name + ' should all be different items'
+            assert a is not b, name + " should all be different items"
 
 
 def _operator_consistency_testdata():
@@ -318,7 +318,7 @@ def test_operator_consistency_isect():
         result1.intersection_update(data2)
         result2 = data1 & data2
         result3 = data1.intersection(data2)
-        check_results_([result1, result2, result3], datas=(data1, data2), name='isect')
+        check_results_([result1, result2, result3], datas=(data1, data2), name="isect")
 
 
 def test_operator_consistency_difference():
@@ -328,7 +328,7 @@ def test_operator_consistency_difference():
         result2 = data1 - data2
         result3 = data1.difference(data2)
         check_results_(
-            [result1, result2, result3], datas=(data1, data2), name='difference'
+            [result1, result2, result3], datas=(data1, data2), name="difference"
         )
 
 
@@ -338,7 +338,7 @@ def test_operator_consistency_xor():
         result1.symmetric_difference_update(data2)
         result2 = data1 ^ data2
         result3 = data1.symmetric_difference(data2)
-        check_results_([result1, result2, result3], datas=(data1, data2), name='xor')
+        check_results_([result1, result2, result3], datas=(data1, data2), name="xor")
 
 
 def test_operator_consistency_union():
@@ -347,7 +347,7 @@ def test_operator_consistency_union():
         result1.update(data2)
         result2 = data1 | data2
         result3 = data1.union(data2)
-        check_results_([result1, result2, result3], datas=(data1, data2), name='union')
+        check_results_([result1, result2, result3], datas=(data1, data2), name="union")
 
 
 def test_operator_consistency_subset():
@@ -355,7 +355,7 @@ def test_operator_consistency_subset():
         result1 = data1 <= data2
         result2 = data1.issubset(data2)
         result3 = set(data1).issubset(set(data2))
-        check_results_([result1, result2, result3], datas=(data1, data2), name='subset')
+        check_results_([result1, result2, result3], datas=(data1, data2), name="subset")
 
 
 def test_operator_consistency_superset():
@@ -364,7 +364,7 @@ def test_operator_consistency_superset():
         result2 = data1.issuperset(data2)
         result3 = set(data1).issuperset(set(data2))
         check_results_(
-            [result1, result2, result3], datas=(data1, data2), name='superset'
+            [result1, result2, result3], datas=(data1, data2), name="superset"
         )
 
 
@@ -372,7 +372,7 @@ def test_operator_consistency_disjoint():
     for data1, data2 in _operator_consistency_testdata():
         result1 = data1.isdisjoint(data2)
         result2 = len(data1.intersection(data2)) == 0
-        check_results_([result1, result2], datas=(data1, data2), name='disjoint')
+        check_results_([result1, result2], datas=(data1, data2), name="disjoint")
 
 
 def test_bitwise_and_consistency():
@@ -384,4 +384,4 @@ def test_bitwise_and_consistency():
     # This requires a custom & operation apparently
     result2 = data1 & data2
     result3 = data1.intersection(data2)
-    check_results_([result1, result2, result3], datas=(data1, data2), name='isect')
+    check_results_([result1, result2, result3], datas=(data1, data2), name="isect")

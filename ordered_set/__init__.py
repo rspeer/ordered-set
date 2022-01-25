@@ -13,7 +13,7 @@ from typing import (
     Iterator,
     List,
     MutableSet,
-    Optional,
+    AbstractSet,
     Sequence,
     Set,
     TypeVar,
@@ -27,10 +27,10 @@ __version__ = "4.1.0"
 
 T = TypeVar("T")
 
-# When Python 3.6 is the minimum version, we can define a type like this,
-# parameterizing the types that an OrderedSet can interoperate with:
-#
-# SetLike = Union[Sequence[T], Set[T]]
+# SetLike[T] is either a set of elements of type T, or a sequence, which
+# we will convert to an OrderedSet by adding its elements in order.
+SetLike = Union[AbstractSet[T], Sequence[T]]
+OrderedSetInitializer = Union[AbstractSet[T], Sequence[T], Iterable[T]]
 
 
 def _is_atomic(obj: Any) -> bool:
@@ -62,11 +62,14 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         OrderedSet([1, 2, 3])
     """
 
-    def __init__(self, iterable: Optional[Iterable[T]] = None):
-        self.items = []  # type: List[T]
-        self.map = {}  # type: Dict[T, int]
-        if iterable is not None:
-            self |= iterable
+    def __init__(self, initial: OrderedSetInitializer[T] = None):
+        self.items: List[T] = []
+        self.map: Dict[T, int] = {}
+        if initial is not None:
+            # In terms of duck-typing, the default __ior__ is compatible with
+            # the types we use, but it doesn't expect all the types we
+            # support as values for `initial`.
+            self |= initial  # type: ignore
 
     def __len__(self):
         """
@@ -81,14 +84,19 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         return len(self.items)
 
     @overload
+    def __getitem__(self, index: slice) -> "OrderedSet[T]":
+        ...
+
+    @overload
     def __getitem__(self, index: Sequence[int]) -> List[T]:
         ...
 
     @overload
-    def __getitem__(self, index: slice) -> "OrderedSet[T]":
+    def __getitem__(self, index: int) -> T:
         ...
 
-    def __getitem__(self, index: int) -> T:
+    # concrete implementation
+    def __getitem__(self, index):
         """
         Get the item at a given index.
 
@@ -166,6 +174,9 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         """
         return key in self.map
 
+    # Technically type-incompatible with MutableSet, because we return an
+    # int instead of nothing. This is also one of the things that makes
+    # OrderedSet convenient to use.
     def add(self, key: T) -> int:
         """
         Add `key` as an item to this OrderedSet, then return its index.
@@ -187,7 +198,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
 
     append = add
 
-    def update(self, sequence: Union[Sequence[T], Set[T]]) -> int:
+    def update(self, sequence: SetLike[T]) -> int:
         """
         Update the set with the given iterable sequence, then return the index
         of the last element inserted.
@@ -210,10 +221,15 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         return item_index
 
     @overload
+    def index(self, key: Sequence[T]) -> List[int]:
+        ...
+
+    @overload
     def index(self, key: T) -> int:
         ...
 
-    def index(self, key: Sequence[T]) -> List[int]:
+    # concrete implementation
+    def index(self, key):
         """
         Get the index of a given entry, raising an IndexError if it's not
         present.
@@ -334,7 +350,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         else:
             return set(self) == other_as_set
 
-    def union(self, *sets: Union[Sequence[T], Set[T]]) -> "OrderedSet[T]":
+    def union(self, *sets: SetLike[T]) -> "OrderedSet[T]":
         """
         Combines all unique items.
         Each items order is defined by its first appearance.
@@ -348,16 +364,18 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> oset | {10}
             OrderedSet([3, 1, 4, 5, 2, 0, 10])
         """
-        cls = self.__class__ if isinstance(self, OrderedSet) else OrderedSet
+        cls: type = OrderedSet
+        if isinstance(self, OrderedSet):
+            cls = self.__class__
         containers = map(list, it.chain([self], sets))
         items = it.chain.from_iterable(containers)
         return cls(items)
 
-    def __and__(self, other: Union[Sequence[T], Set[T]]) -> "OrderedSet[T]":
+    def __and__(self, other: SetLike[T]) -> "OrderedSet[T]":
         # the parent implementation of this is backwards
         return self.intersection(other)
 
-    def intersection(self, *sets: Union[Sequence[T], Set[T]]) -> "OrderedSet[T]":
+    def intersection(self, *sets: SetLike[T]) -> "OrderedSet[T]":
         """
         Returns elements in common between all sets. Order is defined only
         by the first set.
@@ -371,15 +389,16 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> oset.intersection()
             OrderedSet([1, 2, 3])
         """
-        cls = self.__class__ if isinstance(self, OrderedSet) else OrderedSet
+        cls: type = OrderedSet
+        items: OrderedSetInitializer[T] = self
+        if isinstance(self, OrderedSet):
+            cls = self.__class__
         if sets:
             common = set.intersection(*map(set, sets))
             items = (item for item in self if item in common)
-        else:
-            items = self
         return cls(items)
 
-    def difference(self, *sets: Union[Sequence[T], Set[T]]) -> "OrderedSet[T]":
+    def difference(self, *sets: SetLike[T]) -> "OrderedSet[T]":
         """
         Returns all elements that are in this set but not the others.
 
@@ -394,14 +413,13 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             OrderedSet([1, 2, 3])
         """
         cls = self.__class__
+        items: OrderedSetInitializer[T] = self
         if sets:
             other = set.union(*map(set, sets))
             items = (item for item in self if item not in other)
-        else:
-            items = self
         return cls(items)
 
-    def issubset(self, other: Union[Sequence[T], Set[T]]) -> bool:
+    def issubset(self, other: SetLike[T]) -> bool:
         """
         Report whether another set contains this set.
 
@@ -417,7 +435,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             return False
         return all(item in other for item in self)
 
-    def issuperset(self, other: Union[Sequence[T], Set[T]]) -> bool:
+    def issuperset(self, other: SetLike[T]) -> bool:
         """
         Report whether this set contains another set.
 
@@ -433,7 +451,9 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             return False
         return all(item in self for item in other)
 
-    def symmetric_difference(self, other: Union[Sequence[T], Set[T]]) -> "OrderedSet[T]":
+    def symmetric_difference(
+        self, other: SetLike[T]
+    ) -> "OrderedSet[T]":
         """
         Return the symmetric difference of two OrderedSets as a new set.
         That is, the new set will contain all elements that are in exactly
@@ -448,7 +468,9 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> this.symmetric_difference(other)
             OrderedSet([4, 5, 9, 2])
         """
-        cls = self.__class__ if isinstance(self, OrderedSet) else OrderedSet
+        cls: type = OrderedSet
+        if isinstance(self, OrderedSet):
+            cls = self.__class__
         diff1 = cls(self).difference(other)
         diff2 = cls(other).difference(self)
         return diff1.union(diff2)
@@ -461,7 +483,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         self.items = items
         self.map = {item: idx for (idx, item) in enumerate(items)}
 
-    def difference_update(self, *sets: Union[Sequence[T], Set[T]]) -> None:
+    def difference_update(self, *sets: SetLike[T]) -> None:
         """
         Update this OrderedSet to remove items from one or more other sets.
 
@@ -482,7 +504,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             items_to_remove |= items_as_set
         self._update_items([item for item in self.items if item not in items_to_remove])
 
-    def intersection_update(self, other: Union[Sequence[T], Set[T]]) -> None:
+    def intersection_update(self, other: SetLike[T]) -> None:
         """
         Update this OrderedSet to keep only items in another set, preserving
         their order in this set.
@@ -497,7 +519,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         other = set(other)
         self._update_items([item for item in self.items if item in other])
 
-    def symmetric_difference_update(self, other: Union[Sequence[T], Set[T]]) -> None:
+    def symmetric_difference_update(self, other: SetLike[T]) -> None:
         """
         Update this OrderedSet to remove items from another set, then
         add items from the other set that were not present in this set.

@@ -10,8 +10,9 @@ python = "^3.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
-poetry2setup = "^1.0.0"
 black = "^21.12b0"
+mypy = "^0.931"
+ipython = "^7"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
