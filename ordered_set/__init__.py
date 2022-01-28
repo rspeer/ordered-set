@@ -127,6 +127,54 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         else:
             raise TypeError("Don't know how to index an OrderedSet by %r" % index)
 
+    def __setitem__(self, index: int, value: T) -> None:
+        """
+        Set the item at `index` to `value` in place.
+
+        If `value` is already in the OrderedSet, it must be at the index you
+        are assigning (in which case nothing needs to happen). There would
+        be no efficient way to change the index of the value while preserving
+        the OrderedSet contract.
+        """
+        true_index = index
+        if index < 0:
+            true_index = len(self) + index
+
+        if value in self:
+            prior_index = self.map[value]
+            if prior_index != true_index:
+                raise ValueError(
+                    f"Can't assign value {value!r} because it's already in the set "
+                    f"at index {prior_index!r}. OrderedSet values must be unique, "
+                    "and cannot exist at two different indices."
+                )
+            else:
+                # If we're overwriting a value with itself, it's fine, we just
+                # don't need to do anything
+                return
+        else:
+            existing = self.items[true_index]
+            del self.map[existing]
+
+            self.items[true_index] = value
+            self.map[value] = true_index
+
+    def __delitem__(self, index: int) -> None:
+        """
+        Remove the element at the given index.
+        """
+        true_index = index
+        if index < 0:
+            true_index = len(self) + index
+
+        elem = self.items[true_index]
+        del self.map[elem]
+        del self.items[true_index]
+
+        for k, v in self.map.items():
+            if v >= true_index:
+                self.map[k] = v - 1
+
     def copy(self) -> "OrderedSet[T]":
         """
         Return a shallow copy of this object.
@@ -254,6 +302,9 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         """
         Remove and return item at index (default last).
 
+        Popping the last item happens in O(1), but popping any other item
+        requires O(n) time.
+
         Raises KeyError if the set is empty.
         Raises IndexError if index is out of range.
 
@@ -261,13 +312,29 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> oset = OrderedSet([1, 2, 3])
             >>> oset.pop()
             3
+            >>> oset
+            OrderedSet([1, 2])
         """
         if not self.items:
-            raise KeyError("Set is empty")
+            raise KeyError("pop from empty OrderedSet")
 
-        elem = self.items[index]
-        del self.items[index]
+        true_index = index
+        length = len(self)
+        if index < 0:
+            true_index = length + index
+        if true_index < 0 or true_index >= length:
+            raise IndexError("pop index out of range")
+
+        elem = self.items[true_index]
+        del self.items[true_index]
         del self.map[elem]
+
+        # To pop from anywhere but the end, we need to rebuild self.map
+        if true_index != length - 1:
+            for k, v in self.map.items():
+                if v > true_index:
+                    self.map[k] = v - 1
+
         return elem
 
     def discard(self, key: T) -> None:

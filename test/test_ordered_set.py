@@ -385,3 +385,75 @@ def test_bitwise_and_consistency():
     result2 = data1 & data2
     result3 = data1.intersection(data2)
     check_results_([result1, result2, result3], datas=(data1, data2), name="isect")
+
+
+def test_pop_front():
+    set1 = OrderedSet("abc")
+    elem = set1.pop(0)
+
+    assert elem == "a"
+    assert set1 == OrderedSet("bc")
+    assert set1.index("b") == 0
+    assert set1[0] == "b"
+
+    with pytest.raises(KeyError):
+        set1.index("a")
+
+
+def test_pop_middle():
+    set1 = OrderedSet("abc")
+    elem = set1.pop(1)
+
+    assert elem == "b"
+    assert set1[0] == "a"
+    assert set1[1] == "c"
+    assert set1.index("a") == 0
+    assert set1.index("c") == 1
+
+    with pytest.raises(KeyError):
+        set1.index("b")
+
+
+def test_delitem():
+    set1 = OrderedSet("abc")
+    del set1[1]
+
+    assert set1[0] == "a"
+    assert set1[1] == "c"
+    assert set1.index("c") == 1
+
+    with pytest.raises(KeyError):
+        set1.index("b")
+
+
+def test_setitem():
+    set1 = OrderedSet("abc")
+    set1[1] = "B"
+
+    assert set1 == OrderedSet("aBc")
+    assert set1.index("B") == 1
+
+    with pytest.raises(KeyError):
+        set1.index("b")
+
+
+def test_setitem_from_end():
+    set1 = OrderedSet("abc")
+    set1[-2] = "B"
+
+    assert set1 == OrderedSet("aBc")
+    assert set1.index("B") == 1
+
+    with pytest.raises(KeyError):
+        set1.index("b")
+
+
+def test_setitem_duplicate():
+    set1 = OrderedSet("abcde")
+
+    # this does nothing, successfully
+    set1[3] = "d"
+
+    # this fails
+    with pytest.raises(ValueError):
+        set1[3] = "b"
