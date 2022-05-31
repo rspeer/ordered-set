@@ -252,7 +252,8 @@ class OrderedSet(MutableSet[T], Sequence[T]):
 
     def pop(self, index=-1) -> T:
         """
-        Remove and return item at index (default last).
+        Remove and return item at index (default last), updating
+        self.map accordingly.
 
         Raises KeyError if the set is empty.
         Raises IndexError if index is out of range.
@@ -268,6 +269,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         elem = self.items[index]
         del self.items[index]
         del self.map[elem]
+        self.map = {item: idx for (idx, item) in enumerate(self.items)}
         return elem
 
     def discard(self, key: T) -> None:
