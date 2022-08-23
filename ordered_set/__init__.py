@@ -49,7 +49,7 @@ def _is_atomic(obj: Any) -> bool:
     OrderedSet of strings. It shouldn't give the indexes of each individual
     character.
     """
-    return isinstance(obj, str) or isinstance(obj, tuple)
+    return isinstance(obj, (str, tuple))
 
 
 class OrderedSet(MutableSet[T], Sequence[T]):
