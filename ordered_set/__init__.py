@@ -33,7 +33,7 @@ SetLike = Union[AbstractSet[T], Sequence[T]]
 OrderedSetInitializer = Union[AbstractSet[T], Sequence[T], Iterable[T]]
 
 
-def _is_atomic(obj: Any) -> bool:
+def _is_atomic(obj: object) -> bool:
     """
     Returns True for objects which are iterable but should not be iterated in
     the context of indexing an OrderedSet.
@@ -71,7 +71,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             # support as values for `initial`.
             self |= initial  # type: ignore
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
         Returns the number of unique elements in the ordered set
 
@@ -162,7 +162,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         else:
             self.__init__(state)
 
-    def __contains__(self, key: Any) -> bool:
+    def __contains__(self, key: object) -> bool:
         """
         Test if the item is in this ordered set.
 
@@ -250,7 +250,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
     get_loc = index
     get_indexer = index
 
-    def pop(self, index=-1) -> T:
+    def pop(self, index: int = -1) -> T:
         """
         Remove and return item at index (default last).
 
@@ -322,7 +322,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             return "%s()" % (self.__class__.__name__,)
         return "%s(%r)" % (self.__class__.__name__, list(self))
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         """
         Returns true if the containers have the same items. If `other` is a
         Sequence, then order is checked, otherwise it is ignored.
