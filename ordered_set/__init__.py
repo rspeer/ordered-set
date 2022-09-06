@@ -215,9 +215,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             for item in sequence:
                 item_index = self.add(item)
         except TypeError:
-            raise ValueError(
-                "Argument needs to be an iterable, got %s" % type(sequence)
-            )
+            raise ValueError(f"Argument needs to be an iterable, got {type(sequence}")
         return item_index
 
     @overload
@@ -319,8 +317,8 @@ class OrderedSet(MutableSet[T], Sequence[T]):
 
     def __repr__(self) -> str:
         if not self:
-            return "%s()" % (self.__class__.__name__,)
-        return "%s(%r)" % (self.__class__.__name__, list(self))
+            return f"{self.__class__.__name__}()"
+        return f"{self.__class__.__name__}({list(self)!r})"
 
     def __eq__(self, other: object) -> bool:
         """
