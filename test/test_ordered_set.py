@@ -151,13 +151,20 @@ def test_update():
 
 
 def test_pop():
-    set1 = OrderedSet("ab")
-    elem = set1.pop()
-
-    assert elem == "b"
-    elem = set1.pop()
+    set1 = OrderedSet("abc")
+    elem = set1.pop(0)
 
     assert elem == "a"
+    assert set1.index('b') == 0
+    assert set1.index('c') == 1
+
+    elem = set1.pop()
+    assert elem == "c"
+    assert set1.index('b') == 0
+
+    elem = set1.pop()
+    assert elem == "b"
+    assert not set1.map
 
     pytest.raises(KeyError, set1.pop)
 
