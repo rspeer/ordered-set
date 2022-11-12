@@ -215,7 +215,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             for item in sequence:
                 item_index = self.add(item)
         except TypeError:
-            raise ValueError(f"Argument needs to be an iterable, got {type(sequence}")
+            raise ValueError(f"Argument needs to be an iterable, got {type(sequence)}")
         return item_index
 
     @overload
