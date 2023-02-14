@@ -4,7 +4,10 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "ordered-set"
-authors = [{name = "Elia Robyn Lake", email = "gh@arborelia.net"}]
+authors = [
+    {name = "Elia Robyn Lake", email = "gh@arborelia.net"},
+    {name = "Idan Miara", email = "idan@miara.com"},
+]
 readme = "README.md"
 license = {file = "MIT-LICENSE"}
 classifiers = [

@@ -168,9 +168,9 @@ def test_getitem_type_error():
         set1["a"]
 
 
-def test_update_value_error():
+def test_update_type_error():
     set1 = OrderedSet("ab")
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         # noinspection PyTypeChecker
         set1.update(3)
 
