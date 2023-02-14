@@ -16,7 +16,7 @@ setup_kwargs = {
     'author_email': 'gh@arborelia.net',
     'url': 'https://github.com/rspeer/ordered-set',
     'packages': packages,
-    'python_requires': '>=3.7',
+    'python_requires': '>=3.8',
 }
 
 
