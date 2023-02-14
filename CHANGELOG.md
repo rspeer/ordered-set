@@ -2,6 +2,18 @@
 
 Significant changes in major and minor releases of this library:
 
+## Version 5.2 (February 2022)
+
+- Major refactor
+- Added a StableSet implementation, as a base class for OrderedSet.
+- Added Many functions to OrderedSet, to be more complete and more compatible with other implementations.
+  - popitem(last: bool = True), similar to `dict.popitem` (note minor incompatibility with another implementation (`orderedset`) that have the `last` keyword in the `pop` function)
+  - move_to_end(key), similar to `dict.move_to_end`
+  - __le__, __lt__, __ge__, __gt__ - to improve subset/superset testing
+- Minimum Python version is 3.8 (because __reversed__)
+- Fix: OrderedSet.update now raised a TypeError instead of a ValueError when the type of the input is incorrect
+- Added many new tests, and all the tests from 2 other implementations.
+
 ## Version 4.1 (January 2022)
 
 - Packaged using flit. Wheels now exist, and setuptools is no longer required.
