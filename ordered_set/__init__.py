@@ -22,10 +22,10 @@ from typing import (
 )
 
 SLICE_ALL = slice(None)
-__version__ = "4.1.0"
+__version__ = "4.1.1"
 
 
-T = TypeVar("T")
+T = TypeVar("T", covariant=True)
 
 # SetLike[T] is either a set of elements of type T, or a sequence, which
 # we will convert to an OrderedSet by adding its elements in order.
