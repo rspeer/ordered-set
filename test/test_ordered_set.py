@@ -54,6 +54,14 @@ def test_indexing():
     with pytest.raises(KeyError):
         set1.index("br")
 
+    set2 = OrderedSet((("a", "b"), frozenset(("c", "d")), "efg"))
+    assert set2.index(("a", "b"))==0
+    assert set2.index(frozenset(("c", "d")))==1
+    assert set2.index("efg")==2
+    assert set2.index([frozenset(("c", "d")), ("a", "b")])==[1, 0]
+    assert set2.index(OrderedSet([frozenset(("c", "d")), ("a", "b")]))==[1, 0]
+    with pytest.raises(KeyError):
+        set2.index(["a", "b"])
 
 class FancyIndexTester:
     """
