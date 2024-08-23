@@ -35,6 +35,7 @@ OrderedSetInitializer = Union[AbstractSet[T], Sequence[T], Iterable[T]]
 
 
 class OrderedSet(MutableSet[T], Sequence[T]):
+    __slots__ = ("items", "map")
     """
     An OrderedSet is a custom MutableSet that remembers its order, so that
     every entry has an index that can be looked up.
