@@ -65,8 +65,8 @@ operators like sets do.
     OrderedSet(['r', 'x', 's', 'h', 'z', 'm'])
 
 The `__getitem__()` and `index()` methods have been extended to accept any
-iterable except a string, returning a list, to perform NumPy-like "fancy
-indexing".
+iterable, but not hashable (string, tuple, frozenset) instances, returning a
+list, to perform NumPy-like "fancy indexing".
 
     >>> letters = OrderedSet('abracadabra')
 
