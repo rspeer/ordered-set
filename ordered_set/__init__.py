@@ -219,11 +219,11 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         return item_index
 
     @overload
-    def index(self, key: Sequence[T]) -> List[int]:
+    def index(self, key: T) -> int:
         ...
 
     @overload
-    def index(self, key: T) -> int:
+    def index(self, key: Sequence[T]) -> List[int]:
         ...
 
     # concrete implementation
