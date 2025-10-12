@@ -14,6 +14,7 @@ from typing import (
     List,
     MutableSet,
     AbstractSet,
+    Optional,
     Sequence,
     Set,
     TypeVar,
@@ -62,7 +63,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         OrderedSet([1, 2, 3])
     """
 
-    def __init__(self, initial: OrderedSetInitializer[T] = None):
+    def __init__(self, initial: Optional[OrderedSetInitializer[T]] = None):
         self.items: List[T] = []
         self.map: Dict[T, int] = {}
         if initial is not None:
