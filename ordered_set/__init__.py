@@ -266,6 +266,9 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         elem = self.items[index]
         del self.items[index]
         del self.map[elem]
+        # Rebuild map so indices stay consistent for remaining items.
+        self.map = {item: idx for (idx, item) in enumerate(self.items)}
+
         return elem
 
     def discard(self, key: T) -> None:

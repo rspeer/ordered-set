@@ -162,6 +162,28 @@ def test_pop():
     pytest.raises(KeyError, set1.pop)
 
 
+def test_pop_with_index():
+    set1 = OrderedSet("abcde")
+    elem = set1.pop(0)
+
+    assert elem == "a"
+    assert list(set1) == ["b", "c", "d", "e"]
+    assert set1.index("b") == 0
+    assert set1[1] == "c"
+
+    elem = set1.pop(1)
+
+    assert elem == "c"
+    assert list(set1) == ["b", "d", "e"]
+    assert set1.index("d") == 1
+    assert set1[1] == "d"
+
+    elem = set1.pop()
+
+    assert elem == "e"
+    assert list(set1) == ["b", "d"]
+
+
 def test_getitem_type_error():
     set1 = OrderedSet("ab")
     with pytest.raises(TypeError):
