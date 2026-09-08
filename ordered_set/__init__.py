@@ -365,8 +365,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         cls: type = OrderedSet
         if isinstance(self, OrderedSet):
             cls = self.__class__
-        containers = map(list, it.chain([self], sets))
-        items = it.chain.from_iterable(containers)
+        items = it.chain(self, *sets)
         return cls(items)
 
     def __and__(self, other: SetLike[T]) -> "OrderedSet[T]":
