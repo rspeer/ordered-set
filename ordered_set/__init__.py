@@ -527,6 +527,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> print(this)
             OrderedSet([4, 5, 9, 2])
         """
+        other = OrderedSet(other)
         items_to_add = [item for item in other if item not in self]
         items_to_remove = set(other)
         self._update_items(
