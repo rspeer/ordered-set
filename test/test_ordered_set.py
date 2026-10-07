@@ -29,6 +29,20 @@ def test_order():
     assert list(reversed(set1)) == ["d", "c", "r", "b", "a"]
 
 
+@pytest.mark.parametrize("method_name", ["add", "append"])
+def test_add_append_indices_and_order(method_name):
+    oset = OrderedSet()
+    insert = getattr(oset, method_name)
+
+    assert [insert(key) for key in ("b", "a", "b", "c", "a")] == [0, 1, 0, 2, 1]
+
+    with pytest.raises(TypeError):
+        insert([])
+
+    assert list(oset) == ["b", "a", "c"]
+    assert [oset.index(key) for key in oset] == [0, 1, 2]
+
+
 def test_binary_operations():
     set1 = OrderedSet("abracadabra")
     set2 = OrderedSet("simsalabim")

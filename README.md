@@ -86,6 +86,29 @@ a variable as having the type `OrderedSet[str]` or `OrderedSet[Tuple[int,
 str]]`.
 
 
+## Subclassing
+
+`append` is a class-level alias of `add`. Overriding `add` in a subclass does
+not change its inherited `append`. To customise both methods, override or
+rebind `append` in the same subclass:
+
+    >>> class UpperCaseSet(OrderedSet):
+    ...     def add(self, key):
+    ...         return super().add(key.upper())
+    ...     append = add
+    >>> letters = UpperCaseSet()
+    >>> letters.append('b')
+    0
+    >>> letters.append('a')
+    1
+    >>> letters.append('B')
+    0
+    >>> list(letters)
+    ['B', 'A']
+
+A further subclass that overrides `add` must also override or rebind `append`
+if it needs the two methods to share that behaviour.
+
 ## OrderedSet in data science applications
 
 An OrderedSet can be used as a bi-directional mapping between a sparse
