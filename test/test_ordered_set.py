@@ -368,6 +368,23 @@ def test_operator_consistency_superset():
         )
 
 
+@pytest.mark.parametrize("sequence_type", [list, tuple])
+@pytest.mark.parametrize(
+    "initial,other",
+    [
+        ([1], [1, 1]),
+        ([1, 2], [1, 2, 1]),
+        ([1, 2], [2, 2, 2]),
+        ([1], [2, 2]),
+        ([], []),
+        ([], [1, 1]),
+    ],
+)
+def test_issuperset_sequences_with_duplicates(sequence_type, initial, other):
+    sequence = sequence_type(other)
+    assert OrderedSet(initial).issuperset(sequence) == set(initial).issuperset(sequence)
+
+
 def test_operator_consistency_disjoint():
     for data1, data2 in _operator_consistency_testdata():
         result1 = data1.isdisjoint(data2)

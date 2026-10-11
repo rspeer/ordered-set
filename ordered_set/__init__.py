@@ -445,7 +445,8 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             >>> OrderedSet([1, 4, 3, 5]).issuperset({1, 2, 3})
             False
         """
-        if len(self) < len(other):  # Fast check for obvious cases
+        # Sequences may contain duplicates, so their length is not a set size.
+        if isinstance(other, AbstractSet) and len(self) < len(other):
             return False
         return all(item in self for item in other)
 
