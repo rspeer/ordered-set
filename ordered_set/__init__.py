@@ -198,9 +198,9 @@ class OrderedSet(MutableSet[T], Sequence[T]):
 
     append = add
 
-    def update(self, sequence: SetLike[T]) -> int:
+    def update(self, sequence: Iterable[T]) -> int:
         """
-        Update the set with the given iterable sequence, then return the index
+        Update the set with the given iterable, then return the index
         of the last element inserted.
 
         Example:
