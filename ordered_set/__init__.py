@@ -196,7 +196,9 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             self.items.append(key)
         return self.map[key]
 
-    append = add
+    def append(self, key: T) -> int:
+        """Add a key through :meth:`add`, including subclass overrides."""
+        return self.add(key)
 
     def update(self, sequence: SetLike[T]) -> int:
         """
