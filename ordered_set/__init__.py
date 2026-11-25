@@ -449,14 +449,14 @@ class OrderedSet(MutableSet[T], Sequence[T]):
             return False
         return all(item in self for item in other)
 
-    def symmetric_difference(self, other: SetLike[T]) -> "OrderedSet[T]":
+    def symmetric_difference(self, other: Iterable[T]) -> "OrderedSet[T]":
         """
         Return the symmetric difference of two OrderedSets as a new set.
         That is, the new set will contain all elements that are in exactly
         one of the sets.
 
         Their order will be preserved, with elements from `self` preceding
-        elements from `other`.
+        elements from `other`. The other iterable is consumed only once.
 
         Example:
             >>> this = OrderedSet([1, 4, 3, 5, 7])
@@ -467,8 +467,9 @@ class OrderedSet(MutableSet[T], Sequence[T]):
         cls: type = OrderedSet
         if isinstance(self, OrderedSet):
             cls = self.__class__
-        diff1 = cls(self).difference(other)
-        diff2 = cls(other).difference(self)
+        other_set = cls(other)
+        diff1 = cls(self).difference(other_set)
+        diff2 = other_set.difference(self)
         return diff1.union(diff2)
 
     def _update_items(self, items: list) -> None:
