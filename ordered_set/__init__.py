@@ -229,7 +229,7 @@ class OrderedSet(MutableSet[T], Sequence[T]):
     # concrete implementation
     def index(self, key):
         """
-        Get the index of a given entry, raising an IndexError if it's not
+        Get the index of a given entry, raising a KeyError if it's not
         present.
 
         `key` can be an iterable of entries that is not a string, in which case
